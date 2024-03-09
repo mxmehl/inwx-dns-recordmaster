@@ -3,7 +3,7 @@
 import logging
 import sys
 
-from INWX.Domrobot import ApiClient  # type: ignore
+from INWX.Domrobot import ApiClient, ApiType  # type: ignore
 
 from ._config import get_app_config
 
@@ -11,7 +11,9 @@ from ._config import get_app_config
 def api_login(local: str, debug: bool) -> ApiClient:
     """Login to INWX API"""
     if not local:
-        api_client = ApiClient(api_url=ApiClient.API_LIVE_URL, debug_mode=debug)
+        api_client = ApiClient(
+            api_url=ApiClient.API_LIVE_URL, api_type=ApiType.JSON_RPC, debug_mode=debug
+        )
 
         # Get login data from app config
         login_data = get_app_config("inwx_account")
