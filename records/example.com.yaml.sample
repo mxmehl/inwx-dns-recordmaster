@@ -1,30 +1,32 @@
-# Records configuring example.com
-- type: A
-  content: "192.168.13.37"
-- type: AAAA
-  content: "1337:e5e1::1"
-- type: MX
-  content: mail.mailprovider.tld
-  prio: 10
-- type: NS
-  content: ns.inwx.de
-  ttl: 86400
-- type: NS
-  content: ns2.inwx.de
-  ttl: 86400
-- type: NS
-  content: ns3.inwx.eu
-  ttl: 86400
----
-# Records configuring subdomains of example.com
-# *.example.com
-"*":
-  - type: A
-    content: "192.168.13.37"
-  - type: AAAA
-    content: "1337:e5e1::1"
-# test.example.com
-test:
-  - type: CNAME
-    content: cloudprovider.tld
-    ttl: 300
+example.com:
+  # Records configuring example.com
+  root:
+    - type: A
+      content: "192.168.13.37"
+    - type: AAAA
+      content: "1337:e5e1::1"
+    - type: MX
+      content: mail.mailprovider.tld
+      prio: 10
+    - type: NS
+      content: ns.inwx.de
+      ttl: 86400
+    - type: NS
+      content: ns2.inwx.de
+      ttl: 86400
+    - type: NS
+      content: ns3.inwx.eu
+      ttl: 86400
+  # Records configuring subdomains of example.com
+  subdomains:
+    # *.example.com
+    "*":
+      - type: A
+        content: "192.168.13.37"
+      - type: AAAA
+        content: "1337:e5e1::1"
+    # test.example.com
+    test:
+      - type: CNAME
+        content: cloudprovider.tld
+        ttl: 300

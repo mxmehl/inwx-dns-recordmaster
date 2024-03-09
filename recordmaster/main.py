@@ -8,6 +8,7 @@ from ._api import api_login
 from ._data import Domain, print_dc
 from ._get_records import (
     check_local_records_config,
+    combine_local_records,
     convert_local_records_to_data,
     convert_remote_records_to_data,
     find_valid_local_records_files,
@@ -79,16 +80,22 @@ def main():
     if args.dry:
         logging.info("Dry-run mode activated. No changes on remote DNS entries will be executed.")
 
+    # Load domain records configuration files
+    records_files = find_valid_local_records_files(args.dns_config)
+
     # Login to API
     api = api_login(args.local, args.debug)
 
-    for domain_config_file in find_valid_local_records_files(args.dns_config):
+    #for domain_config_file in find_valid_local_records_files(args.dns_config):
+    for domainname, records in combine_local_records(records_files).items():
         # Initialise a new domain dataclass to hold the different local and
         # remote records
         domain = Domain()
 
+        domain.name = domainname
+
         # Read local configuration into domain dataclass
-        convert_local_records_to_data(domain, domain_config_file)
+        convert_local_records_to_data(domain, records)
 
         # Sanitize local configuration
         check_local_records_config(domain=domain.name, records=domain.local_records)
@@ -120,7 +127,7 @@ def main():
         unmatched_local = [loc_rec for loc_rec in domain.local_records if not loc_rec.id]
 
         if args.debug:
-            logging.debug("[%s] Current data of the domain after matching:")
+            logging.debug("[%s] Current data of the domain after matching:", domainname)
             print_dc(domain)
 
         # 2. Sync local to existing remote records

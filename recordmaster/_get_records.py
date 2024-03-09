@@ -12,7 +12,7 @@ from ._api import inwx_api
 from ._data import Domain, Record
 
 
-def find_valid_local_records_files(configdir: str):
+def find_valid_local_records_files(configdir: str) -> list[str]:
     """Get all local domain configuration files"""
     logging.debug("Gather locally configured domains from configuration directory '%s'", configdir)
 
@@ -22,34 +22,39 @@ def find_valid_local_records_files(configdir: str):
         file = path.abspath(path.join(configdir, file))
         if file.endswith((".yaml", ".yml")):
             dcfg_files_abs.append(file)
+        elif file.endswith(".sample"):
+            pass
         else:
             logging.warning(
-                "File %s does not match naming convention and will be ignored",
+                "File '%s' does not match naming convention and will be ignored",
                 file,
             )
 
     return dcfg_files_abs
 
 
-def _read_local_records_from_file(cfg_file):
-    """Read configuration file for a specific domain"""
-    domain = path.splitext(path.basename(cfg_file))[0]
+def combine_local_records(records_files: list[str]) -> dict:
+    """Combine all valid local records configuration files and put into one big dict"""
 
-    with open(cfg_file, mode="r", encoding="UTF-8") as ymlfile:
-        ymldocs = yaml.safe_load_all(ymlfile)
+    local_records_config = {}
 
-        root = next(ymldocs)
-        records = next(ymldocs)
+    for recfile in records_files:
+        with open(recfile, mode="r", encoding="UTF-8") as ymlfile:
+            try:
+                ymldata = yaml.safe_load(ymlfile)
+                local_records_config = local_records_config | ymldata
+            except yaml.YAMLError as exc:
+                logging.error("Loading configuration from '$s' failed: %s", recfile, exc)
 
-    return domain, root, records
+    return local_records_config
 
 
-def convert_local_records_to_data(domain: Domain, configfile: str) -> None:
+def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     """Read domain configuration with records from local file and put into dataclass"""
-    # Read local domain config
-    domain.name, root_records, sub_records = _read_local_records_from_file(configfile)
+    logging.debug("[%s] Reading local domain config: %s", domain.name, records)
 
-    logging.debug("[%s] Reading local domain config", domain.name)
+    # Read local domain config
+    root_records, sub_records = records["root"], records.get("subdomains", {})
 
     # Adding root records
     for rec in root_records:
