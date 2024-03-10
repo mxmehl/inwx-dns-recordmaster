@@ -58,7 +58,7 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     # Read local domain config
     logging.debug("[%s] Reading local domain config: %s", domain.name, records)
     # Records for main domain are under the `.` key
-    root_records = records["."]
+    root_records = records.get(".", {})
     # All the other keys are supposed to be subdomains
     sub_records = {k: records[k] for k in set(list(records.keys())) - set(".")}
 
