@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{ include = "recordmaster" }]
 
 [tool.poetry.scripts]
-dnsupdate = "recordmaster.main:main"
+inwx-dnsrm = "recordmaster.main:main"
 
 [tool.poetry.dependencies]
 python = "^3.11"
