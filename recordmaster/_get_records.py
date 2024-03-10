@@ -36,7 +36,7 @@ def find_valid_local_records_files(configdir: str) -> list[str]:
 def combine_local_records(records_files: list[str]) -> dict:
     """Combine all valid local records configuration files and put into one big dict"""
 
-    local_records_config = {}
+    local_records_config: dict = {}
 
     for recfile in records_files:
         with open(recfile, mode="r", encoding="UTF-8") as ymlfile:
