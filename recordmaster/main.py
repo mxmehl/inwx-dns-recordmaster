@@ -5,7 +5,7 @@ import logging
 
 from . import configure_logger
 from ._api import api_login
-from ._data import Domain, print_dc
+from ._data import Domain, cache_data
 from ._get_records import (
     check_local_records_config,
     combine_local_records,
@@ -141,9 +141,8 @@ def main():
 
         unmatched_local = [loc_rec for loc_rec in domain.local_records if not loc_rec.id]
 
-        if args.debug:
-            logging.debug("[%s] Current data of the domain after matching:", domainname)
-            print_dc(domain)
+        # Write current data to cache file in order to ease recoveries
+        cache_data(domain, args.debug)
 
         # 2. Sync local to existing remote records
         sync_existing_local_to_remote(api, domain=domain, dry=args.dry)

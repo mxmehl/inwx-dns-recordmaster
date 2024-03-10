@@ -26,7 +26,7 @@ def _initialize_config_file(configfile: str) -> dict:
 
 def _read_app_config_file() -> dict:
     """Read full app configuration"""
-    config_file = join(user_config_dir("inwx-dns-recordmaster"), "config.toml")
+    config_file = join(user_config_dir("inwx-dns-recordmaster", ensure_exists=True), "config.toml")
     try:
         with open(config_file, mode="r", encoding="UTF-8") as tomlfile:
             app_config = toml.load(tomlfile)

@@ -3,6 +3,10 @@
 import json
 import logging
 from dataclasses import asdict, dataclass, field
+from os.path import join
+from time import time
+
+from platformdirs import user_cache_dir
 
 from . import RECORD_KEYS
 
@@ -55,6 +59,27 @@ class Domain:
     local_records: list[Record] = field(default_factory=list)
 
 
-def print_dc(domain: Domain):
-    """Print a dataclass as JSON"""
-    print(json.dumps(asdict(domain), indent=2))
+def dc2json(domain: Domain) -> str:
+    """return a dataclass as JSON"""
+    return json.dumps(asdict(domain), indent=2)
+
+
+def cache_data(domain: Domain, debug: bool):
+    """Cache the current state of data before running any syncs"""
+
+    # ~/.cache/inwx-dns-recordmaster/example.com-1521462189.json
+    cache_file = join(
+        user_cache_dir("inwx-dns-recordmaster", ensure_exists=True),
+        f"{domain.name}-{int(time())}.json",
+    )
+
+    # Convert dataclass to JSON, write in cache file
+    jsondc = dc2json(domain)
+    logging.debug("[%s] Writing current data of the domain to '%s'", domain.name, cache_file)
+    with open(cache_file, mode="w", encoding="UTF-8") as cachefile:
+        cachefile.write(jsondc)
+
+    # If --debug, also print current dataclass
+    if debug:
+        logging.debug("[%s] Current data of the domain after matching:", domain.name)
+        print(jsondc)
