@@ -51,10 +51,16 @@ def combine_local_records(records_files: list[str]) -> dict:
 
 def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     """Read domain configuration with records from local file and put into dataclass"""
-    logging.debug("[%s] Reading local domain config: %s", domain.name, records)
+    # If no records present, create empty dict
+    if records is None:
+        records = {}
 
     # Read local domain config
-    root_records, sub_records = records["root"], records.get("subdomains", {})
+    logging.debug("[%s] Reading local domain config: %s", domain.name, records)
+    # Records for main domain are under the `.` key
+    root_records = records["."]
+    # All the other keys are supposed to be subdomains
+    sub_records = {k: records[k] for k in set(list(records.keys())) - set(".")}
 
     # Adding root records
     for rec in root_records:
@@ -66,7 +72,7 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
 
     # Adding subdomain records
     for subdomain, recs in sub_records.items():
-        # The local configuration layout is a bit different from the internal
+        # The local configuration layout is a bit different from INWX' internal
         # data model, to make configuration files a bit shorter. We convert this
         # here.
         for rec in recs:

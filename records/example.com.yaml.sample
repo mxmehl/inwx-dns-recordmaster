@@ -1,6 +1,6 @@
 example.com:
   # Records configuring example.com
-  root:
+  .:
     - type: A
       content: "192.168.13.37"
     - type: AAAA
@@ -17,16 +17,14 @@ example.com:
     - type: NS
       content: ns3.inwx.eu
       ttl: 86400
-  # Records configuring subdomains of example.com
-  subdomains:
-    # *.example.com
-    "*":
-      - type: A
-        content: "192.168.13.37"
-      - type: AAAA
-        content: "1337:e5e1::1"
-    # test.example.com
-    test:
-      - type: CNAME
-        content: cloudprovider.tld
-        ttl: 300
+  # *.example.com
+  "*":
+    - type: A
+      content: "192.168.13.37"
+    - type: AAAA
+      content: "1337:e5e1::1"
+  # test.example.com
+  test:
+    - type: CNAME
+      content: cloudprovider.tld
+      ttl: 300
