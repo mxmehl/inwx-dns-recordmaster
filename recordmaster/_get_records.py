@@ -44,7 +44,7 @@ def combine_local_records(records_files: list[str]) -> dict:
                 ymldata = yaml.safe_load(ymlfile)
                 local_records_config = local_records_config | ymldata
             except yaml.YAMLError as exc:
-                logging.error("Loading configuration from '$s' failed: %s", recfile, exc)
+                logging.error("Loading configuration from '%s' failed: %s", recfile, exc)
 
     return local_records_config
 
