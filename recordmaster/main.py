@@ -51,6 +51,12 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
+    "-p",
+    "--preserve-remote",
+    action="store_true",
+    help="Preserve remote records that are not configured locally.",
+)
+parser.add_argument(
     "-d",
     "--debug",
     action="store_true",
@@ -86,7 +92,7 @@ def main():
     # Login to API
     api = api_login(args.local, args.debug)
 
-    #for domain_config_file in find_valid_local_records_files(args.dns_config):
+    # for domain_config_file in find_valid_local_records_files(args.dns_config):
     for domainname, records in combine_local_records(records_files).items():
         # Initialise a new domain dataclass to hold the different local and
         # remote records
@@ -137,10 +143,18 @@ def main():
         create_missing_at_remote(api, domain=domain, records=unmatched_local, dry=args.dry)
 
         # 4. Delete records that only exist remotely, unless their types are ignored
-        delete_unconfigured_at_remote(
-            api,
-            domain=domain,
-            records=unmatched_remote,
-            dry=args.dry,
-            ignore_types=args.ignore_types,
-        )
+        if not args.preserve_remote:
+            delete_unconfigured_at_remote(
+                api,
+                domain=domain,
+                records=unmatched_remote,
+                dry=args.dry,
+                ignore_types=args.ignore_types,
+            )
+        else:
+            logging.info(
+                "[%s] Skipping the deletion of %s unconfigured records at remote, "
+                "as request by the -p flag",
+                domainname,
+                len(unmatched_remote),
+            )
