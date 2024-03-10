@@ -27,7 +27,12 @@ parser.add_argument(
     "-c",
     "--dns-config",
     required=True,
-    help=("The directory where the DNS configuration files for each domain reside"),
+    help="The directory where the DNS configuration files for each domain reside",
+)
+parser.add_argument(
+    "-d",
+    "--domain",
+    help="Only run the program for the given domain",
 )
 parser.add_argument(
     "-l",
@@ -57,7 +62,6 @@ parser.add_argument(
     help="Preserve remote records that are not configured locally.",
 )
 parser.add_argument(
-    "-d",
     "--debug",
     action="store_true",
     help="Read local file for remote nameserver configuration. Make it work offline.",
@@ -94,6 +98,11 @@ def main():
 
     # for domain_config_file in find_valid_local_records_files(args.dns_config):
     for domainname, records in combine_local_records(records_files).items():
+        # If `-d`/`--domain` given, skip all other domains
+        if args.domain and domainname != args.domain:
+            logging.info("[%s] Skipping the handling of this domain as requested by -d", domainname)
+            continue
+
         # Initialise a new domain dataclass to hold the different local and
         # remote records
         domain = Domain()
@@ -154,7 +163,7 @@ def main():
         else:
             logging.info(
                 "[%s] Skipping the deletion of %s unconfigured records at remote, "
-                "as request by the -p flag",
+                "as requested by the -p flag",
                 domainname,
                 len(unmatched_remote),
             )
