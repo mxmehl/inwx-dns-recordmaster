@@ -26,6 +26,9 @@ password = ""
 # to create a sub-account with restricted access. You may also ask the INWX
 # support to limit access to this account to certain IP addresses.
 shared_secret = ""
+
+# Whether to use the INWX test instance at https://www.ote.inwx.de. Default: false
+test_instance = false
 """
 
 
