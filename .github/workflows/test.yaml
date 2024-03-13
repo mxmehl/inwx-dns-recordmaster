@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2023 DB Systel GmbH
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Test suites
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  # Test using the tool via poetry on different OSes and python versions
+  test-os-python-matrix:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 10
+      # do not abort the whole test job if one combination in the matrix fails
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+        os: [ubuntu-22.04]
+        include:
+          - python-version: "3.11"
+            os: macos-latest
+          - python-version: "3.11"
+            os: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/poetrybuild
+        with:
+          python: ${{ matrix.python-version }}
+      - name: Execute inwx-dns-recordmaster
+        run: poetry run inwx-dnsrm --help
+
+
+  # Test building the package and installing it via pip3
+  test-build-install:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.11"
+      - name: Install poetry
+        run: pip install poetry
+      - name: Build package
+        run: poetry build
+      - name: Install package
+        run: pip3 install dist/inwx_dns_recordmaster-*.tar.gz
+      - name: Run package
+        run: |
+          inwx-dnsrm --version
+          inwx-dnsrm --help
+
+  pylint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/poetrybuild
+      - name: Lint with pylint
+        run: poetry run pylint recordmaster/
+
+  formatting:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/poetrybuild
+      - name: Test formatting with isort and black
+        run: |
+          poetry run isort --check recordmaster/
+          poetry run black .
+
+  mypy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/poetrybuild
+      - name: Test typing with mypy
+        run: poetry run mypy
+
+  # reuse:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Check REUSE Compliance
+  #       uses: fsfe/reuse-action@v3
