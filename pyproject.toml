@@ -8,6 +8,19 @@ version = "0.1.1"
 description = "Manage DNS nameserver records of INWX domains via YAML files and API requests. Lightweight, version-control ready"
 authors = ["Max Mehl <mail@mehl.mx>"]
 readme = "README.md"
+repository = "https://github.com/mxmehl/inwx-dns-recordmaster"
+keywords = ["inwx", "dns", "nameserver", "automation", "configuration-management"]
+license = "GPL-3.0-only"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Topic :: Internet :: Name Service (DNS)",
+  "Topic :: Software Development :: Version Control :: Git",
+  "Topic :: System :: Systems Administration",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
+]
 packages = [{ include = "recordmaster" }]
 
 [tool.poetry.scripts]
