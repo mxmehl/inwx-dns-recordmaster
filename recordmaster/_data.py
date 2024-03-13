@@ -8,6 +8,7 @@ from __future__ import annotations  # support "int | None"
 
 import json
 import logging
+import sys
 from dataclasses import asdict, dataclass, field
 from os.path import join
 from time import time
@@ -42,16 +43,28 @@ class Record:
         else:
             pass
 
-        for key, val in data.items():
-            if key in RECORD_KEYS:
-                setattr(self, key, val)
-            else:
-                logging.warning(
-                    "Ignored importing record data for domain '%s'. Key: '%s', Value: '%s'",
-                    domain,
-                    key,
-                    val,
-                )
+        # Check if at least the type and content of each record is present
+        if all(key in data.keys() for key in ("type", "content")):
+            for key, val in data.items():
+                if key in RECORD_KEYS:
+                    setattr(self, key, val)
+                else:
+                    domain = domain if domain else data["name"]
+                    logging.warning(
+                        "Ignored importing record data for domain '%s'. Key: '%s', Value: '%s'",
+                        domain,
+                        key,
+                        val,
+                    )
+        else:
+            logging.error(
+                "The following record does not contain the mandatory fields "
+                "'type' and 'content': %s (Domain: %s) (Root: %s)",
+                data,
+                domain,
+                root,
+            )
+            sys.exit(1)
 
 
 @dataclass
