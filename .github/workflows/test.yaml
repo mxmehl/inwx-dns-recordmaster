@@ -32,6 +32,7 @@ jobs:
       - uses: ./.github/actions/poetrybuild
         with:
           python: ${{ matrix.python-version }}
+          poetry_args: --only main
       - name: Execute inwx-dns-recordmaster
         run: poetry run inwx-dnsrm --help
 
@@ -56,6 +57,32 @@ jobs:
           inwx-dnsrm --version
           inwx-dnsrm --help
 
+  # Run functional tests against the INWX test instance
+  live-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/poetrybuild
+        with:
+          poetry_args: --only main
+
+      - name: Create app configuration
+        run: |
+          mkdir -p /home/runner/.config/inwx-dns-recordmaster
+          cp tests/config.toml /home/runner/.config/inwx-dns-recordmaster/config.toml
+          # Replace secrets in app config
+          sed -i "s|__INWX_OTE_USER__|${{ secrets.INWX_OTE_USER }}|" /home/runner/.config/inwx-dns-recordmaster/config.toml
+          sed -i "s|__INWX_OTE_PASS__|${{ secrets.INWX_OTE_PASS }}|" /home/runner/.config/inwx-dns-recordmaster/config.toml
+
+      - name: Run with first records configuration
+        run: poetry run inwx-dnsrm -c tests/records/
+
+      - name: Run with second records configuration
+        run: |
+          cp tests/records/test-mehl.mx.yaml.changes tests/records/test-mehl.mx.yaml
+          poetry run inwx-dnsrm -c tests/records/
+
+  # Formatting
   pylint:
     runs-on: ubuntu-22.04
     steps:
@@ -82,6 +109,7 @@ jobs:
       - name: Test typing with mypy
         run: poetry run mypy
 
+  # REUSE
   reuse:
     runs-on: ubuntu-latest
     steps:

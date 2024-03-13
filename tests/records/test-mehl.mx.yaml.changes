@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2024 Max Mehl <https://mehl.mx>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+test-mehl.mx:
+  .:
+    - type: A
+      content: "127.0.0.1"
+    - type: NS
+      content: ns.ote.inwx.de
+      ttl: 86400
+    - type: NS
+      content: ns2.ote.inwx.de
+      ttl: 86400
+  cloud:
+    - type: MX
+      content: example.com

@@ -14,14 +14,17 @@ from ._config import get_app_config
 
 def api_login(api_response_file: str, debug: bool) -> ApiClient:
     """Login to INWX API"""
-    # Do not login when using the remote API response file
     if not api_response_file:
-        api_client = ApiClient(
-            api_url=ApiClient.API_LIVE_URL, api_type=ApiType.JSON_RPC, debug_mode=debug
+        # Set API URL depending on app config
+        login_data = get_app_config("inwx_account")
+        api_url = (
+            ApiClient.API_OTE_URL
+            if login_data.get("test_instance", False)
+            else ApiClient.API_LIVE_URL
         )
+        api_client = ApiClient(api_url=api_url, api_type=ApiType.JSON_RPC, debug_mode=debug)
 
         # Get login data from app config
-        login_data = get_app_config("inwx_account")
         login_data = {
             "username": login_data.get("username"),
             "password": login_data.get("password"),
@@ -37,6 +40,8 @@ def api_login(api_response_file: str, debug: bool) -> ApiClient:
         login_result = api_client.login(**login_data)
         if login_result["code"] != 1000:  # type: ignore
             raise RuntimeError(f"API Login error: {login_result}")
+
+    # Do not login when using the remote API response file
     else:
         api_client = ApiClient(debug_mode=debug)
 
