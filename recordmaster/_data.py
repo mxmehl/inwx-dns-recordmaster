@@ -4,6 +4,8 @@
 
 """Dataclasses for domains and their records"""
 
+from __future__ import annotations  # support "int | None"
+
 import json
 import logging
 from dataclasses import asdict, dataclass, field
