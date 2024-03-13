@@ -26,7 +26,7 @@ def find_valid_local_records_files(configdir: str) -> list[str]:
         file = path.abspath(path.join(configdir, file))
         if file.endswith((".yaml", ".yml")):
             dcfg_files_abs.append(file)
-        elif file.endswith((".sample", ".git")):
+        elif file.endswith((".sample", ".git", ".schema.json")):
             pass
         else:
             logging.warning(
