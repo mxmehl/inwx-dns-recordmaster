@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "inwx-dns-recordmaster"
-version = "0.1.0"
+version = "0.1.1"
 description = "Manage INWX domains via files, Git, and their API"
 authors = ["Max Mehl <mail@mehl.mx>"]
 readme = "README.md"
