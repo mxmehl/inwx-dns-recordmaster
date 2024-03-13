@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Max Mehl <https://mehl.mx>
+#
+# SPDX-License-Identifier: GPL-3.0-only
+
 """DNS record sync operations between local and remote"""
 
 import logging

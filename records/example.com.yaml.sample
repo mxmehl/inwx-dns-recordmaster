@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Max Mehl <https://mehl.mx>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 example.com:
   # Records configuring example.com
   .:
