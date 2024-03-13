@@ -82,9 +82,9 @@ jobs:
       - name: Test typing with mypy
         run: poetry run mypy
 
-  # reuse:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Check REUSE Compliance
-  #       uses: fsfe/reuse-action@v3
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check REUSE Compliance
+        uses: fsfe/reuse-action@v3
