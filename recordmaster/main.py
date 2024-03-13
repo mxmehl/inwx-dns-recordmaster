@@ -3,7 +3,7 @@
 import argparse
 import logging
 
-from . import configure_logger
+from . import __version__, configure_logger
 from ._api import api_login
 from ._data import Domain, cache_data
 from ._get_records import (
@@ -71,6 +71,7 @@ parser.add_argument(
     action="store_true",
     help="Dry run, do not change anything at remote",
 )
+parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
 
 def main():

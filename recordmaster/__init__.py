@@ -1,6 +1,9 @@
 """Global init file"""
 
 import logging
+from importlib.metadata import version
+
+__version__ = version("inwx-dns-recordmaster")
 
 RECORD_KEYS = ("id", "name", "type", "content", "ttl", "prio")
 
