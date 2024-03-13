@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import sys
 
 from . import __version__, configure_logger
 from ._api import api_login
@@ -35,16 +36,6 @@ parser.add_argument(
     help="Only run the program for the given domain",
 )
 parser.add_argument(
-    "-l",
-    "--local",
-    default="",
-    help=(
-        "Read local file for remote nameserver configuration. Make it work offline. "
-        "However, this only works with one local domain configuration file. "
-        "Implies --dry"
-    ),
-)
-parser.add_argument(
     "-i",
     "--ignore-types",
     # action="extend",
@@ -60,6 +51,16 @@ parser.add_argument(
     "--preserve-remote",
     action="store_true",
     help="Preserve remote records that are not configured locally.",
+)
+parser.add_argument(
+    "-a",
+    "--api-response",
+    default="",
+    help=(
+        "Read local file that simulates the API response of INWX. Makes it work offline. "
+        "However, this only works with one local domain configuration file, so use -d as well!. "
+        "Implies --dry"
+    ),
 )
 parser.add_argument(
     "--debug",
@@ -78,9 +79,17 @@ def main():
     "Main function"
     # Process arguments
     args = parser.parse_args()
-    # --local implies --dry
-    if args.local:
+    # --api-response implies --dry
+    if args.api_response:
         args.dry = True
+
+        if not args.domain:
+            print(
+                "ERROR: When using the -a/--api-response option you must also provide "
+                "the corresponding --domain"
+            )
+            sys.exit(1)
+
     # Convert --ignore-types to list if
     if not isinstance(args.ignore_types, list):
         args.ignore_types = [args.ignore_types]
@@ -95,7 +104,7 @@ def main():
     records_files = find_valid_local_records_files(args.dns_config)
 
     # Login to API
-    api = api_login(args.local, args.debug)
+    api = api_login(args.api_response, args.debug)
 
     # for domain_config_file in find_valid_local_records_files(args.dns_config):
     for domainname, records in combine_local_records(records_files).items():
@@ -117,7 +126,7 @@ def main():
         check_local_records_config(domain=domain.name, records=domain.local_records)
 
         # Read remote configuration into domain dataclass
-        convert_remote_records_to_data(api, domain, args.local)
+        convert_remote_records_to_data(api, domain, args.api_response)
 
         # Compare remote records with the local ones. The general idea is to
         # make a multi-step sync:

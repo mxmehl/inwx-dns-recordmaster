@@ -8,9 +8,10 @@ from INWX.Domrobot import ApiClient, ApiType  # type: ignore
 from ._config import get_app_config
 
 
-def api_login(local: str, debug: bool) -> ApiClient:
+def api_login(api_response_file: str, debug: bool) -> ApiClient:
     """Login to INWX API"""
-    if not local:
+    # Do not login when using the remote API response file
+    if not api_response_file:
         api_client = ApiClient(
             api_url=ApiClient.API_LIVE_URL, api_type=ApiType.JSON_RPC, debug_mode=debug
         )

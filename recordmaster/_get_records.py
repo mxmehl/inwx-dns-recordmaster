@@ -133,14 +133,14 @@ def check_local_records_config(domain: str, records: list[Record]):
         sys.exit(1)
 
 
-def convert_remote_records_to_data(api: ApiClient, domain: Domain, local: str):
+def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_file: str):
     """Request domain configuration with records from the remote (INWX) and put into dataclass"""
 
     # Load remote configuration from remote via API call, or from local file
-    if not local:
+    if not api_response_file:
         domain_remote = inwx_api(api, "nameserver.info", domain=domain.name)["resData"]
     else:
-        with open(local, mode="r", encoding="UTF-8") as jsonfile:
+        with open(api_response_file, mode="r", encoding="UTF-8") as jsonfile:
             domain_remote = json.load(jsonfile)
 
     domain.id = domain_remote["roId"]
