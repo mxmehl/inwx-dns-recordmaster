@@ -164,6 +164,6 @@ In order to get this output from an existing domain, you can run the program wit
 
 ## License
 
-The main license of this project is `GPL-3.0-only`, Copyright Max Mehl.
+The main license of this project is the GNU General Public License 3.0, no later version (`GPL-3.0-only`), Copyright Max Mehl.
 
-There may be components under different, but compatible licenses. The project is [REUSE](https://reuse.software) compliant which makes these portions transparent. You will find all used licenses in the `LICENSES` directory.
+There may be components under different, but compatible licenses and from different copyright holders. The project is [REUSE](https://reuse.software) compliant which makes these portions transparent. You will find all used licenses in the `LICENSES` directory.
