@@ -38,4 +38,4 @@ line-length = 100
 
 # MYPY settings
 [tool.mypy]
-files = ["dns/*.py"]
+files = ["recordmaster/*.py"]
