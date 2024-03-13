@@ -72,7 +72,7 @@ jobs:
       - name: Test formatting with isort and black
         run: |
           poetry run isort --check recordmaster/
-          poetry run black .
+          poetry run black --check .
 
   mypy:
     runs-on: ubuntu-22.04
