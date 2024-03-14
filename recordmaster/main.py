@@ -169,7 +169,9 @@ def main():
         )
 
         # 3. Create records that only exist locally at remote
-        create_missing_at_remote(api, domain=domain, records=unmatched_local, dry=args.dry)
+        create_missing_at_remote(
+            api, domain=domain, records=unmatched_local, dry=args.dry, interactive=args.interactive
+        )
 
         # 4. Delete records that only exist remotely, unless their types are ignored
         if not args.preserve_remote:
@@ -178,6 +180,7 @@ def main():
                 domain=domain,
                 records=unmatched_remote,
                 dry=args.dry,
+                interactive=args.interactive,
                 ignore_types=args.ignore_types,
             )
         else:

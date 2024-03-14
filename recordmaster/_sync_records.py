@@ -5,36 +5,12 @@
 """DNS record sync operations between local and remote"""
 
 import logging
-import sys
 
 from INWX.Domrobot import ApiClient  # type: ignore
 
 from . import RECORD_KEYS
 from ._api import inwx_api
 from ._data import Domain, Record
-
-
-def _ask_confirmation(question, default="yes") -> bool:
-    """Ask a question and allow to set a default"""
-    valid = {"yes": True, "y": True, "no": False, "n": False}
-    if default is None:
-        prompt = " [y/n] "
-    elif default == "yes":
-        prompt = " [Y/n] "
-    elif default == "no":
-        prompt = " [y/N] "
-    else:
-        raise ValueError(f"invalid default answer: '{default}'")
-
-    while True:
-        sys.stdout.write(question + prompt)
-        choice = input().lower()
-        if default is not None and choice == "":
-            return valid[default]
-        if choice in valid:
-            return valid[choice]
-
-        print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
 def sync_existing_local_to_remote(
@@ -65,30 +41,16 @@ def sync_existing_local_to_remote(
                     rem_val,
                     loc_val,
                 )
-                # Update record via API call, or just show command it would have
-                # executed if dry-run mode
-                if interactive:
-                    if _ask_confirmation("Do you want to execute the above change?"):
-                        if not dry:
-                            inwx_api(
-                                api, "nameserver.updateRecord", id=loc_rec.id, **{key: loc_val}
-                            )
-                        else:
-                            logging.info(
-                                "[%s] API call for update not executed in dry-run mode: "
-                                "id=%s, args=%s",
-                                domain.name,
-                                loc_rec.id,
-                                {key: loc_val},
-                            )
-                    else:
-                        logging.info(
-                            "[%s] API call for update not executed, because you said no: "
-                            "id=%s, args=%s",
-                            domain.name,
-                            loc_rec.id,
-                            {key: loc_val},
-                        )
+
+                # Update record via API call
+                inwx_api(
+                    api,
+                    "nameserver.updateRecord",
+                    interactive=interactive,
+                    dry=dry,
+                    id=loc_rec.id,
+                    **{key: loc_val},
+                )
             else:
                 # No action needed as records are equal or undefined
                 logging.debug(
@@ -96,7 +58,9 @@ def sync_existing_local_to_remote(
                 )
 
 
-def create_missing_at_remote(api: ApiClient, domain: Domain, records: list[Record], dry: bool):
+def create_missing_at_remote(
+    api: ApiClient, domain: Domain, records: list[Record], dry: bool, interactive: bool
+):
     """Create records that only exist locally but not remotely"""
     for rec in records:
         # Only add record parameter to API call that are set locally
@@ -106,20 +70,26 @@ def create_missing_at_remote(api: ApiClient, domain: Domain, records: list[Recor
                 newrecord[key] = value
 
         logging.info("[%s] Creating new record: %s", domain.name, newrecord)
-        # Run the creation of the new nameserver record with API, or just show
-        # command in dry-run mode
-        if not dry:
-            inwx_api(api, "nameserver.createRecord", domain=domain.name, **newrecord)
-        else:
-            logging.debug(
-                "API call for creation not executed in dry-run mode: domain=%s, args=%s",
-                domain.name,
-                newrecord,
-            )
+
+        # Run the creation of the new nameserver record with API
+        inwx_api(
+            api,
+            "nameserver.createRecord",
+            interactive=interactive,
+            dry=dry,
+            domain=domain.name,
+            **newrecord,
+        )
 
 
 def delete_unconfigured_at_remote(
-    api: ApiClient, domain: Domain, records: list[Record], dry: bool, ignore_types: list
+    # pylint: disable=too-many-arguments
+    api: ApiClient,
+    domain: Domain,
+    records: list[Record],
+    dry: bool,
+    interactive: bool,
+    ignore_types: list,
 ):
     """Delete records that only exist remotely but not locally, except some types"""
     for rec in records:
@@ -129,16 +99,9 @@ def delete_unconfigured_at_remote(
                 domain.name,
                 rec,
             )
-            # Run the deletion of the nameserver record with API, or just show
-            # command in dry-run mode
-            if not dry:
-                inwx_api(api, "nameserver.deleteRecord", id=rec.id)
-            else:
-                logging.debug(
-                    "API call for deletion not executed in dry-run mode: domain=%s, id=%s",
-                    domain.name,
-                    rec.id,
-                )
+
+            # Run the deletion of the nameserver record with API
+            inwx_api(api, "nameserver.deleteRecord", interactive=interactive, dry=dry, id=rec.id)
         else:
             logging.info(
                 "[%s] This remote record is not configured locally, but you "
