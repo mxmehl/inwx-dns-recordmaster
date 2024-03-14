@@ -76,6 +76,11 @@ parser.add_argument(
     action="store_true",
     help="Dry run, do not change anything at remote",
 )
+parser.add_argument(
+    "--interactive",
+    action="store_true",
+    help="Ask to confirm each change at INWX before executing it",
+)
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
 
@@ -159,7 +164,9 @@ def main():
         cache_data(domain, args.debug)
 
         # 2. Sync local to existing remote records
-        sync_existing_local_to_remote(api, domain=domain, dry=args.dry)
+        sync_existing_local_to_remote(
+            api, domain=domain, dry=args.dry, interactive=args.interactive
+        )
 
         # 3. Create records that only exist locally at remote
         create_missing_at_remote(api, domain=domain, records=unmatched_local, dry=args.dry)
