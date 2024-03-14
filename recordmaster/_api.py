@@ -12,6 +12,29 @@ from INWX.Domrobot import ApiClient, ApiType  # type: ignore
 from ._config import get_app_config
 
 
+def _ask_confirmation(question, default="yes") -> bool:
+    """Ask a question and allow to set a default"""
+    valid = {"yes": True, "y": True, "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError(f"invalid default answer: '{default}'")
+
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = input().lower()
+        if default is not None and choice == "":
+            return valid[default]
+        if choice in valid:
+            return valid[choice]
+
+        print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
+
+
 def api_login(api_response_file: str, debug: bool) -> ApiClient:
     """Login to INWX API"""
     if not api_response_file:
@@ -48,8 +71,21 @@ def api_login(api_response_file: str, debug: bool) -> ApiClient:
     return api_client
 
 
-def inwx_api(api: ApiClient, method: str, **params) -> dict:
+def inwx_api(
+    api: ApiClient, method: str, interactive: bool = False, dry: bool = False, **params
+) -> dict:
     """Wrapper for INWX API call that also checks the output for errors"""
+    if interactive:
+        if _ask_confirmation("Do you want to execute the above change?"):
+            pass
+        else:
+            logging.info("The API call for '%s' has not been made as you have requested.", method)
+            return {}
+
+    if dry:
+        logging.info("API call for '%s' has not been executed in dry-run mode", method)
+        return {}
+
     api_result = api.call_api(api_method=method, method_params=params)
 
     if api_result["code"] != 1000:  # type: ignore
