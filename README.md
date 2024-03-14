@@ -11,7 +11,9 @@ SPDX-License-Identifier: GPL-3.0-only
 [![The latest version of INWX DNS recordmaster can be found on PyPI.](https://img.shields.io/pypi/v/inwx-dns-recordmaster.svg)](https://pypi.org/project/inwx-dns-recordmaster/)
 [![Information on what versions of Python INWX DNS Recordmaster supports can be found on PyPI.](https://img.shields.io/pypi/pyversions/inwx-dns-recordmaster.svg)](https://pypi.org/project/inwx-dns-recordmaster/)
 
-Manage DNS nameserver records of INWX domains via YAML files and API requests. Lightweight, version-control ready
+Manage DNS nameserver records of INWX domains via YAML files and API requests. Lightweight, fast, version-control ready.
+
+Note: This is no official software project by INWX, it just kindly uses their public API.
 
 
 ## Overview
@@ -111,6 +113,11 @@ Contributions are welcome! The development is easiest with `poetry`: `poetry ins
 The `--debug` flag will bring you a long way. If you want to create an issue with this project, please provide a debug log, it will be of great help!
 
 Also, `--dry` is recommended to play around with the program and avoid breaking your productive configuration.
+
+
+### I deleted all my productive records!
+
+Oh no, you forgot to make a `--dry` run first? While there is no rollback functionality, the tool preserves the local and remote data before making any modification. For each run and domain, you will find an export of the internal data scheme in a cache folder. On Linux systems, this is in `~/.cache/inwx-dns-recordmaster`, the file names will be something like `example.com-1521462189.json` (the number being the current UNIX time). With this, you can reconstruct the remote state before running this tool, either manually in the INWX web interface or you put it in your local DNS records configuration.
 
 
 ### Simulate API response
