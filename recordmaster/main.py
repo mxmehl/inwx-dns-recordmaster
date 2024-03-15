@@ -233,10 +233,10 @@ def convert(
     # Convert to YAML
     yml_dict = domain.to_local_conf_format(domain.remote_records, ignore_types)
     logging.info(
-        "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
+        "[%s] Remote records at INWX convert to local YAML configuration format:\n",
         domain.name,
-        convert_dict_to_yaml(yml_dict),
     )
+    print(convert_dict_to_yaml(yml_dict))
 
 
 def main():

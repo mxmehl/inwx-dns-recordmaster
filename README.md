@@ -133,6 +133,7 @@ Run `inwx-dnsrm sync -h` to see all options.
 Some examples:
 
 * `inwx-dnsrm convert -d example.com`: get the remote records for the domain "example.com" and output its corresponding local YAML configuration which you can just copy.
+* `inwx-dnsrm convert -d example.com > records/example.com.yaml`: like the above, but write the configuration to a file so you don't have to copy it.
 * `inwx-dnsrm -i SOA,NS convert -d example.com`: the same as above, but do not fetch SOA and NS records (SOA is the default).
 
 Run `inwx-dnsrm convert -h` to see all options.
