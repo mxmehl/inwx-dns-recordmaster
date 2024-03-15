@@ -55,7 +55,14 @@ def combine_local_records(records_files: list[str]) -> dict:
 
 def convert_dict_to_yaml(data: dict) -> str:
     """Convert a dict to YAML"""
-    return yaml.dump(data, sort_keys=False)
+    # sort data alphabetically, and make sure . will always be first
+    data_sorted = {}
+    for domain, records in data.items():
+        records_sorted = dict(sorted(records.items(), key=lambda item: (item[0] != ".", item[0])))
+        data_sorted[domain] = records_sorted
+
+    # Dump as YAML
+    return yaml.dump(data_sorted, sort_keys=False)
 
 def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     """Read domain configuration with records from local file and put into dataclass"""
