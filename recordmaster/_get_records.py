@@ -26,7 +26,7 @@ def find_valid_local_records_files(configdir: str) -> list[str]:
         file = path.abspath(path.join(configdir, file))
         if file.endswith((".yaml", ".yml")):
             dcfg_files_abs.append(file)
-        elif file.endswith(".sample"):
+        elif file.endswith((".sample", ".git")):
             pass
         else:
             logging.warning(
@@ -62,7 +62,7 @@ def convert_dict_to_yaml(data: dict) -> str:
         data_sorted[domain] = records_sorted
 
     # Dump as YAML
-    return yaml.dump(data_sorted, sort_keys=False)
+    return yaml.dump(data_sorted, sort_keys=False, allow_unicode=True)
 
 
 def convert_local_records_to_data(domain: Domain, records: dict) -> None:

@@ -103,7 +103,7 @@ def delete_unconfigured_at_remote(
             # Run the deletion of the nameserver record with API
             inwx_api(api, "nameserver.deleteRecord", interactive=interactive, dry=dry, id=rec.id)
         else:
-            logging.info(
+            logging.debug(
                 "[%s] This remote record is not configured locally, but you "
                 "requested to not delete remote records of this type: %s",
                 domain.name,

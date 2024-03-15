@@ -12,7 +12,7 @@ from INWX.Domrobot import ApiClient  # type: ignore
 
 from . import __version__, configure_logger
 from ._api import api_login
-from ._data import Domain, cache_data
+from ._data import Domain, cache_data, convert_punycode
 from ._get_records import (
     check_local_records_config,
     combine_local_records,
@@ -150,8 +150,7 @@ def sync(
         # Initialise a new domain dataclass to hold the different local and
         # remote records
         domain = Domain()
-
-        domain.name = domainname
+        domain.name = convert_punycode(domainname)
 
         # Read local configuration into domain dataclass
         convert_local_records_to_data(domain, records)
@@ -225,7 +224,7 @@ def convert(
     """The convert command"""
     # Create and initiate domain dataclass
     domain = Domain()
-    domain.name = converted_domain
+    domain.name = convert_punycode(converted_domain)
 
     # Read remote configuration into domain dataclass
     convert_remote_records_to_data(api, domain, api_response)
