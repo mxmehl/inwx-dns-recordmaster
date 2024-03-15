@@ -42,7 +42,6 @@ parser.add_argument(
 parser.add_argument(
     "-i",
     "--ignore-types",
-    # action="extend",
     nargs="*",
     default="SOA",
     help=(
@@ -99,7 +98,7 @@ def main():
             )
             sys.exit(1)
 
-    # Convert --ignore-types to list if
+    # Convert --ignore-types to list if it's just a string (the default)
     if not isinstance(args.ignore_types, list):
         args.ignore_types = [args.ignore_types]
 
@@ -115,7 +114,6 @@ def main():
     # Login to API
     api = api_login(args.api_response, args.debug)
 
-    # for domain_config_file in find_valid_local_records_files(args.dns_config):
     for domainname, records in combine_local_records(records_files).items():
         # If `-d`/`--domain` given, skip all other domains
         if args.domain and domainname != args.domain:
