@@ -4,7 +4,7 @@
 
 [tool.poetry]
 name = "inwx-dns-recordmaster"
-version = "0.1.2"
+version = "0.2.0"
 description = "Manage DNS nameserver records of INWX domains via YAML files and API requests. Lightweight, version-control ready"
 authors = ["Max Mehl <mail@mehl.mx>"]
 readme = "README.md"
