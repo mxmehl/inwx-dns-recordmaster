@@ -87,29 +87,40 @@ However, there are default and extendable exceptions:
 * By default, records of the type `SOA` are not considered as they change upon each change and are handled well by INWX. You can add additional record types with the `--ignore-types` argument if you don't want to handle them.
 * You can also blatantly ignore records that exist at INWX but not in your local configuration, using the `--preserve-remote` flag. This way, you only *update existing* and *add new* records, but don't *delete unconfigured* records at INWX.
 
-
-#### Jumpstart: conversion of existing INWX records
-
-If you already have a domain configured at INWX whose records you want to migrate to your local DNS records configuration, there is `--convert-remote`:
-
-```
-inwx-dnsrm -c records/ --convert-remote --domain example.com
-```
-
-This enables you to take the DNS config at INWX for a specific domain, put it in your local configuration, and start from this point onwards. You don't have to manually write long configuration files from scratch, unless you want to.
+If you already have a domain configured at INWX whose records you want to migrate to your local DNS records configuration, there is the convert command: `inwx-dnsrm convert --domain example.com`. This enables you to take the DNS config at INWX for a specific domain, put it in your local configuration, and start from this point onwards. You don't have to manually write long configuration files from scratch, unless you want to.
 
 
 ## Run the program
 
 You can execute the program using the command `inwx-dnsrm`. `inwx-dnsrm --help` shows all available arguments and options.
 
+The program has two main command: `sync` and `convert`.
+
+
+### Synchronisation mode
+
+`sync` covers the main functionality, managing INWX domain records based on local configuration files whose format is explained above.
+
 Some examples:
 
-* `inwx-dnsrm -c records/`: read the DNS records from the `records/` directory, match them with the remote, and call the API to add, update, and delete entries for each locally configured domain.
-* `inwx-dnsrm -c records/ -d example.com`: like the above, but only check the domain `example.com` and ignore all other locally configured. If you have many domains, this may speed up operations.
-* `inwx-dnsrm -c records/ -p`: run normally, but do not delete nameserver entries at INWX which are not configured locally.
-* `inwx-dnsrm -c records/ --dry`: run the whole program but do not make any changes at INWX. Very helpful if you just configure a new domain.
+* `inwx-dnsrm sync -c records/`: read the DNS records from the `records/` directory, match them with the remote, and call the API to add, update, and delete entries for each locally configured domain.
+* `inwx-dnsrm sync -c records/ -d example.com`: like the above, but only check the domain `example.com` and ignore all other locally configured. If you have many domains, this may speed up operations.
+* `inwx-dnsrm sync -c records/ -p`: run normally, but do not delete nameserver entries at INWX which are not configured locally.
+* `inwx-dnsrm sync -c records/ --dry`: run the whole program but do not make any changes at INWX. Very helpful if you just configure a new domain.
+* `inwx-dnsrm sync --debug -c records/`: run the whole program and show all debug messages.
 
+Run `inwx-dnsrm sync -h` to see all options.
+
+### Conversion mode
+
+`convert` can convert existing nameserver entries at INWX to the local configuration file format which is explained above. This is neat if you want to "on-board" a domain you already have configured at INWX and don't want to write the configuration files from scratch.
+
+Some examples:
+
+* `inwx-dnsrm convert -d example.com`: get the remote records for the domain "example.com" and output its corresponding local YAML configuration which you can just copy.
+* `inwx-dnsrm -i SOA,NS convert -d example.com`: the same as above, but do not fetch SOA and NS records (SOA is the default).
+
+Run `inwx-dnsrm convert -h` to see all options.
 
 ## Contribute and Develop
 
@@ -123,17 +134,19 @@ Contributions are welcome! The development is easiest with `poetry`: `poetry ins
 
 The `--debug` flag will bring you a long way. If you want to create an issue with this project, please provide a debug log, it will be of great help!
 
-Also, `--dry` is recommended to play around with the program and avoid breaking your productive configuration.
+When running the `sync` command, this may also help:
+* `--dry` is recommended to play around with the program and avoid breaking your productive configuration.
+* `--interactive` will ask you before each change for a confirmation.
 
 
 ### I deleted all my productive records!
 
-Oh no, you forgot to make a `--dry` run first? While there is no rollback functionality, the tool preserves the local and remote data before making any modification. For each run and domain, you will find an export of the internal data scheme in a cache folder. On Linux systems, this is in `~/.cache/inwx-dns-recordmaster`, the file names will be something like `example.com-1521462189.json` (the number being the current UNIX time). With this, you can reconstruct the remote state before running this tool, either manually in the INWX web interface or you put it in your local DNS records configuration.
+Oh no, you forgot to make a `sync --dry` run or `convert` the remote records first? While there is no rollback functionality, the tool preserves the local and remote data before making any modification. For each run and domain, you will find an export of the internal data scheme in a cache folder. On Linux systems, this is in `~/.cache/inwx-dns-recordmaster`, the file names will be something like `example.com-1521462189.json` (the number being the current UNIX time). With this, you can reconstruct the remote state before running this tool, either manually in the INWX web interface or you put it in your local DNS records configuration.
 
 
 ### Simulate API response
 
-If you want to work locally or want to modify the INWX API response, you can simulate it. The `--api-response` flag takes a JSON file as argument that basically contains the reponse of the INWX API about the remote state of a domain's nameserver entries.
+If you want to work locally or want to modify the INWX API response, you can simulate it. The `--api-response` flag takes a JSON file as argument that basically contains the reponse of the INWX API about the remote state of a domain's nameserver entries. This works in both the `sync` and `convert` commands.
 
 This could look like the following:
 
