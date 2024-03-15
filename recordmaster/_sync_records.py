@@ -17,10 +17,10 @@ def sync_existing_local_to_remote(
     api: ApiClient, domain: Domain, dry: bool, interactive: bool
 ) -> None:
     """Compare previously matched local records to remote ones. If differences, update remote"""
-    # pylint: disable=too-many-nested-blocks
     # Loop over local records which have an ID, so matched to a remote entry
     for loc_rec in [loc_rec for loc_rec in domain.local_records if loc_rec.id]:
         # For each ID, compare content, ttl and prio
+        changes = {}
         for key in ("content", "ttl", "prio"):
             # Get local and corresponding remote attribute
             loc_val = getattr(loc_rec, key)
@@ -33,7 +33,7 @@ def sync_existing_local_to_remote(
             if loc_val and (loc_val != rem_val):
                 # Log and update record
                 logging.info(
-                    "[%s] Updating '%s' record of '%s': '%s' from '%s' to '%s'",
+                    "[%s] Update '%s' record of '%s': '%s' from '%s' to '%s'",
                     domain.name,
                     loc_rec.type,
                     loc_rec.name,
@@ -43,19 +43,23 @@ def sync_existing_local_to_remote(
                 )
 
                 # Update record via API call
-                inwx_api(
-                    api,
-                    "nameserver.updateRecord",
-                    interactive=interactive,
-                    dry=dry,
-                    id=loc_rec.id,
-                    **{key: loc_val},
-                )
+                changes[key] = loc_val
             else:
                 # No action needed as records are equal or undefined
                 logging.debug(
                     "[%s] (%s) %s equal: %s = %s", loc_rec.name, loc_rec.id, key, rem_val, loc_val
                 )
+
+        # Execute collected changes for this ID, if they exist
+        if changes:
+            inwx_api(
+                api,
+                "nameserver.updateRecord",
+                interactive=interactive,
+                dry=dry,
+                id=loc_rec.id,
+                **changes,
+            )
 
 
 def create_missing_at_remote(
