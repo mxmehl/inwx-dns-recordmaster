@@ -30,7 +30,7 @@ def sync_existing_local_to_remote(
                 if rem_rec.id == loc_rec.id
             )
             # Update attribute at remote if values differ
-            if loc_val and (loc_val != rem_val):
+            if loc_val != rem_val:
                 # Log and update record
                 logging.info(
                     "[%s] Update '%s' record of '%s': '%s' from '%s' to '%s'",
