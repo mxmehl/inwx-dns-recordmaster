@@ -92,7 +92,7 @@ class Domain:
 
             data[name].append(rec_yaml)
 
-        return {self.name: data}
+        return {convert_punycode(self.name, False): data}
 
 
 def dc2json(domain: Domain) -> str:
@@ -119,3 +119,11 @@ def cache_data(domain: Domain, debug: bool):
     if debug:
         logging.debug("[%s] Current data of the domain after matching:", domain.name)
         print(jsondc)
+
+
+def convert_punycode(domain: str, is_punycode: bool = True) -> str:
+    """Convert a domain name from human-readable to punycode, or vice versa"""
+    if is_punycode:
+        return domain.encode("idna").decode()
+
+    return domain.encode().decode("idna")
