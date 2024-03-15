@@ -107,6 +107,13 @@ def main():
             )
             sys.exit(1)
 
+    if args.convert_remote and not args.domain:
+        print(
+            "ERROR: When using the --convert-remote option you must also provide "
+            "the corresponding --domain"
+        )
+        sys.exit(1)
+
     # Convert --ignore-types to list if it's just a string (the default)
     if not isinstance(args.ignore_types, list):
         args.ignore_types = [args.ignore_types]
@@ -123,6 +130,25 @@ def main():
     # Login to API
     api = api_login(args.api_response, args.debug)
 
+    # Return the remote records as local YAML configuration, if wanted
+    if args.convert_remote:
+        # Create and initiate domain dataclass
+        domain = Domain()
+        domain.name = args.domain
+
+        # Read remote configuration into domain dataclass
+        convert_remote_records_to_data(api, domain, args.api_response)
+
+        # Convert to YAML
+        yml_dict = domain.to_local_conf_format(domain.remote_records)
+        logging.info(
+            "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
+            domain.name,
+            convert_dict_to_yaml(yml_dict),
+        )
+        sys.exit()
+
+    # Normal procedure
     for domainname, records in combine_local_records(records_files).items():
         # If `-d`/`--domain` given, skip all other domains
         if args.domain and domainname != args.domain:
@@ -143,17 +169,6 @@ def main():
 
         # Read remote configuration into domain dataclass
         convert_remote_records_to_data(api, domain, args.api_response)
-
-        # Return the remote records as local YAML configuration, if wanted
-        if args.convert_remote:
-            yml_dict = domain.to_local_conf_format(domain.remote_records)
-            logging.info(
-                "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
-                domain.name,
-                convert_dict_to_yaml(yml_dict),
-            )
-            logging.info("[%s] Stopping handling this domain due to --convert-remote", domain.name)
-            continue
 
         # Compare remote records with the local ones. The general idea is to
         # make a multi-step sync:
