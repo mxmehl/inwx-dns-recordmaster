@@ -14,6 +14,7 @@ from ._data import Domain, cache_data
 from ._get_records import (
     check_local_records_config,
     combine_local_records,
+    convert_dict_to_yaml,
     convert_local_records_to_data,
     convert_remote_records_to_data,
     find_valid_local_records_files,
@@ -42,7 +43,6 @@ parser.add_argument(
 parser.add_argument(
     "-i",
     "--ignore-types",
-    # action="extend",
     nargs="*",
     default="SOA",
     help=(
@@ -64,6 +64,16 @@ parser.add_argument(
         "Read local file that simulates the API response of INWX. Makes it work offline. "
         "However, this only works with one local domain configuration file, so use -d as well!. "
         "Implies --dry"
+    ),
+)
+parser.add_argument(
+    "--convert-remote",
+    action="store_true",
+    help=(
+        "Convert INWX records of any domain you own to the local YAML configuration. "
+        "It respects the values for --ignore-types, so SOA records by default. "
+        "Requires --domain to be set. "
+        "Will not make any modifications at the remote."
     ),
 )
 parser.add_argument(
@@ -99,7 +109,14 @@ def main():
             )
             sys.exit(1)
 
-    # Convert --ignore-types to list if
+    if args.convert_remote and not args.domain:
+        print(
+            "ERROR: When using the --convert-remote option you must also provide "
+            "the corresponding --domain"
+        )
+        sys.exit(1)
+
+    # Convert --ignore-types to list if it's just a string (the default)
     if not isinstance(args.ignore_types, list):
         args.ignore_types = [args.ignore_types]
 
@@ -115,7 +132,25 @@ def main():
     # Login to API
     api = api_login(args.api_response, args.debug)
 
-    # for domain_config_file in find_valid_local_records_files(args.dns_config):
+    # Return the remote records as local YAML configuration, if wanted
+    if args.convert_remote:
+        # Create and initiate domain dataclass
+        domain = Domain()
+        domain.name = args.domain
+
+        # Read remote configuration into domain dataclass
+        convert_remote_records_to_data(api, domain, args.api_response)
+
+        # Convert to YAML
+        yml_dict = domain.to_local_conf_format(domain.remote_records, args.ignore_types)
+        logging.info(
+            "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
+            domain.name,
+            convert_dict_to_yaml(yml_dict),
+        )
+        sys.exit()
+
+    # Normal procedure
     for domainname, records in combine_local_records(records_files).items():
         # If `-d`/`--domain` given, skip all other domains
         if args.domain and domainname != args.domain:

@@ -88,6 +88,17 @@ However, there are default and extendable exceptions:
 * You can also blatantly ignore records that exist at INWX but not in your local configuration, using the `--preserve-remote` flag. This way, you only *update existing* and *add new* records, but don't *delete unconfigured* records at INWX.
 
 
+#### Jumpstart: conversion of existing INWX records
+
+If you already have a domain configured at INWX whose records you want to migrate to your local DNS records configuration, there is `--convert-remote`:
+
+```
+inwx-dnsrm -c records/ --convert-remote --domain example.com
+```
+
+This enables you to take the DNS config at INWX for a specific domain, put it in your local configuration, and start from this point onwards. You don't have to manually write long configuration files from scratch, unless you want to.
+
+
 ## Run the program
 
 You can execute the program using the command `inwx-dnsrm`. `inwx-dnsrm --help` shows all available arguments and options.
