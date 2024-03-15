@@ -86,11 +86,10 @@ parser_convert.add_argument(
 parser.add_argument(
     "-i",
     "--ignore-types",
-    nargs="*",
     default="SOA",
     help=(
-        "Do not delete these types of records when they are only found remotely "
-        "but not locally. Leave empty do consider all types. Example: -i SOA NS."
+        "A comma-separated list of record types which will be ignored when "
+        "considering remote records. Leave empty do consider all types. Example: -i SOA,NS."
     ),
 )
 parser.add_argument(
@@ -246,8 +245,7 @@ def main():
     args = parser.parse_args()
 
     # Convert --ignore-types to list if it's just a string (the default)
-    if not isinstance(args.ignore_types, list):
-        args.ignore_types = [args.ignore_types]
+    args.ignore_types = args.ignore_types.split(",")
 
     # Set logger
     configure_logger(args=args)

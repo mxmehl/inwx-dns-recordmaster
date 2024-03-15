@@ -35,7 +35,7 @@ def _ask_confirmation(question, default="yes") -> bool:
         print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
-def api_login(debug: bool = False, api_response_file: str = "") -> ApiClient:
+def api_login(api_response_file: str = "", debug: bool = False) -> ApiClient:
     """Login to INWX API"""
     if not api_response_file:
         # Set API URL depending on app config
@@ -97,6 +97,7 @@ def inwx_api(
         )
         sys.exit(1)
     else:
-        raise RuntimeError(f"API call error: {api_result}")
+        logging.error("API call error for '%s' with params '%s': %s", method, params, api_result)
+        sys.exit(1)
 
     return api_result
