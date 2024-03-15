@@ -88,7 +88,15 @@ def inwx_api(
 
     api_result = api.call_api(api_method=method, method_params=params)
 
-    if api_result["code"] != 1000:  # type: ignore
+    # Handle return codes
+    if api_result["code"] == 1000:
+        pass
+    elif api_result["code"] == 2303:
+        logging.error(
+            "The domain '%s' does not exist at INWX. Aborting program", params.get("domain")
+        )
+        sys.exit(1)
+    else:
         raise RuntimeError(f"API call error: {api_result}")
 
-    return api_result  # type: ignore
+    return api_result
