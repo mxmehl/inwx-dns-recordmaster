@@ -64,6 +64,7 @@ def convert_dict_to_yaml(data: dict) -> str:
     # Dump as YAML
     return yaml.dump(data_sorted, sort_keys=False)
 
+
 def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     """Read domain configuration with records from local file and put into dataclass"""
     # If no records present, create empty dict

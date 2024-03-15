@@ -69,7 +69,7 @@ class Domain:
         Convert the internal data format of records to a dict that matches the
         local YAML configuration
         """
-        data = {}
+        data: dict[str, list] = {}
 
         for rec in records:
             if rec.type in ignore_types:
@@ -83,7 +83,7 @@ class Domain:
                 data[name] = []
 
             # Type and content are straightforward, we don't need to convert it
-            rec_yaml = {"type": rec.type, "content": rec.content}
+            rec_yaml: dict[str, str | int] = {"type": rec.type, "content": rec.content}
             # TTL and prio will be set unless it's the default value
             if rec.ttl != Record.ttl:
                 rec_yaml["ttl"] = rec.ttl
