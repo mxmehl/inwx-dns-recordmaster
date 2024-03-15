@@ -35,7 +35,7 @@ def _ask_confirmation(question, default="yes") -> bool:
         print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
-def api_login(api_response_file: str, debug: bool) -> ApiClient:
+def api_login(debug: bool = False, api_response_file: str = "") -> ApiClient:
     """Login to INWX API"""
     if not api_response_file:
         # Set API URL depending on app config

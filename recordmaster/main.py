@@ -29,17 +29,58 @@ from ._sync_records import (
 parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
 )
-parser.add_argument(
+subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+# Sync command
+parser_sync = subparsers.add_parser(
+    "sync",
+    help="Synchronise DNS records from local configuration to productive INWX nameserver entries",
+)
+parser_sync.add_argument(
     "-c",
     "--dns-config",
     required=True,
     help="The directory where the DNS configuration files for each domain reside",
 )
-parser.add_argument(
+parser_sync.add_argument(
     "-d",
     "--domain",
     help="Only run the program for the given domain",
 )
+parser_sync.add_argument(
+    "-p",
+    "--preserve-remote",
+    action="store_true",
+    help="Preserve remote records that are not configured locally.",
+)
+parser_sync.add_argument(
+    "--dry",
+    action="store_true",
+    help="Dry run, do not change anything at remote",
+)
+parser_sync.add_argument(
+    "--interactive",
+    action="store_true",
+    help="Ask to confirm each change at INWX before executing it",
+)
+
+# Convert command
+parser_convert = subparsers.add_parser(
+    "convert",
+    help="Convert existing INWX domain records to the local configuration's YAML file format",
+)
+parser_convert.add_argument(
+    "-d",
+    "--domain",
+    required=True,
+    help=(
+        "The domain whose records want to convert. "
+        "It respects the values for --ignore-types, so SOA records by default. "
+        "Will not make any modifications at the remote."
+    ),
+)
+
+# General flags
 parser.add_argument(
     "-i",
     "--ignore-types",
@@ -49,12 +90,6 @@ parser.add_argument(
         "Do not delete these types of records when they are only found remotely "
         "but not locally. Leave empty do consider all types. Example: -i SOA NS."
     ),
-)
-parser.add_argument(
-    "-p",
-    "--preserve-remote",
-    action="store_true",
-    help="Preserve remote records that are not configured locally.",
 )
 parser.add_argument(
     "-a",
@@ -67,37 +102,15 @@ parser.add_argument(
     ),
 )
 parser.add_argument(
-    "--convert-remote",
-    action="store_true",
-    help=(
-        "Convert INWX records of any domain you own to the local YAML configuration. "
-        "It respects the values for --ignore-types, so SOA records by default. "
-        "Requires --domain to be set. "
-        "Will not make any modifications at the remote."
-    ),
-)
-parser.add_argument(
     "--debug",
     action="store_true",
     help="Read local file for remote nameserver configuration. Make it work offline.",
 )
-parser.add_argument(
-    "--dry",
-    action="store_true",
-    help="Dry run, do not change anything at remote",
-)
-parser.add_argument(
-    "--interactive",
-    action="store_true",
-    help="Ask to confirm each change at INWX before executing it",
-)
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
 
-def main():
-    "Main function"
-    # Process arguments
-    args = parser.parse_args()
+def sync(args, api):
+    """The sync command"""
     # --api-response implies --dry
     if args.api_response:
         args.dry = True
@@ -109,46 +122,11 @@ def main():
             )
             sys.exit(1)
 
-    if args.convert_remote and not args.domain:
-        print(
-            "ERROR: When using the --convert-remote option you must also provide "
-            "the corresponding --domain"
-        )
-        sys.exit(1)
-
-    # Convert --ignore-types to list if it's just a string (the default)
-    if not isinstance(args.ignore_types, list):
-        args.ignore_types = [args.ignore_types]
-
-    # Set logger
-    configure_logger(args=args)
-
     if args.dry:
         logging.info("Dry-run mode activated. No changes on remote DNS entries will be executed.")
 
     # Load domain records configuration files
     records_files = find_valid_local_records_files(args.dns_config)
-
-    # Login to API
-    api = api_login(args.api_response, args.debug)
-
-    # Return the remote records as local YAML configuration, if wanted
-    if args.convert_remote:
-        # Create and initiate domain dataclass
-        domain = Domain()
-        domain.name = args.domain
-
-        # Read remote configuration into domain dataclass
-        convert_remote_records_to_data(api, domain, args.api_response)
-
-        # Convert to YAML
-        yml_dict = domain.to_local_conf_format(domain.remote_records, args.ignore_types)
-        logging.info(
-            "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
-            domain.name,
-            convert_dict_to_yaml(yml_dict),
-        )
-        sys.exit()
 
     # Normal procedure
     for domainname, records in combine_local_records(records_files).items():
@@ -225,3 +203,46 @@ def main():
                 domainname,
                 len(unmatched_remote),
             )
+
+
+def convert(args, api):
+    """The convert command"""
+    # Create and initiate domain dataclass
+    domain = Domain()
+    domain.name = args.domain
+
+    # Read remote configuration into domain dataclass
+    convert_remote_records_to_data(api, domain, args.api_response)
+
+    # Convert to YAML
+    yml_dict = domain.to_local_conf_format(domain.remote_records, args.ignore_types)
+    logging.info(
+        "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
+        domain.name,
+        convert_dict_to_yaml(yml_dict),
+    )
+
+
+def main():
+    "Main function"
+    # Process arguments
+    args = parser.parse_args()
+
+    # Convert --ignore-types to list if it's just a string (the default)
+    if not isinstance(args.ignore_types, list):
+        args.ignore_types = [args.ignore_types]
+
+    # Set logger
+    configure_logger(args=args)
+
+    # Login to API
+    api = api_login(args.api_response, args.debug)
+
+    # Figure out which command to run
+    if args.command == "sync":
+        sync(args, api)
+    elif args.command == "convert":
+        convert(args, api)
+    else:
+        logging.error("No valid command provided!")
+        sys.exit(1)
