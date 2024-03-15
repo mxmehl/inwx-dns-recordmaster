@@ -64,7 +64,7 @@ class Domain:
     remote_records: list[Record] = field(default_factory=list)
     local_records: list[Record] = field(default_factory=list)
 
-    def to_local_conf_format(self, records: list[Record]) -> dict:
+    def to_local_conf_format(self, records: list[Record], ignore_types: list) -> dict:
         """
         Convert the internal data format of records to a dict that matches the
         local YAML configuration
@@ -72,6 +72,8 @@ class Domain:
         data = {}
 
         for rec in records:
+            if rec.type in ignore_types:
+                continue
             # Gather the "subdomain" as this is the format we're using
             name = rec.name.replace(self.name, "")
             name = "." if name == "" else name.rstrip(".")

@@ -41,14 +41,6 @@ parser.add_argument(
     help="Only run the program for the given domain",
 )
 parser.add_argument(
-    "--convert-remote",
-    action="store_true",
-    help=(
-        "Convert the internal data format of records to the local YAML configuration. "
-        "Will not make any modifications at the remote."
-    ),
-)
-parser.add_argument(
     "-i",
     "--ignore-types",
     nargs="*",
@@ -72,6 +64,16 @@ parser.add_argument(
         "Read local file that simulates the API response of INWX. Makes it work offline. "
         "However, this only works with one local domain configuration file, so use -d as well!. "
         "Implies --dry"
+    ),
+)
+parser.add_argument(
+    "--convert-remote",
+    action="store_true",
+    help=(
+        "Convert INWX records of any domain you own to the local YAML configuration. "
+        "It respects the values for --ignore-types, so SOA records by default. "
+        "Requires --domain to be set. "
+        "Will not make any modifications at the remote."
     ),
 )
 parser.add_argument(
@@ -140,7 +142,7 @@ def main():
         convert_remote_records_to_data(api, domain, args.api_response)
 
         # Convert to YAML
-        yml_dict = domain.to_local_conf_format(domain.remote_records)
+        yml_dict = domain.to_local_conf_format(domain.remote_records, args.ignore_types)
         logging.info(
             "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
             domain.name,
