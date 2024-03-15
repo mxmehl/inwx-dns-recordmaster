@@ -18,7 +18,7 @@ from . import RECORD_KEYS
 
 
 @dataclass
-class Record:
+class Record:  # pylint: disable=too-many-instance-attributes
     """Dataclass holding a nameserver record, be it remote or local"""
 
     # nameserver details
@@ -28,6 +28,13 @@ class Record:
     content: str = ""
     ttl: int = 3600
     prio: int = 0
+    # pylint: disable=invalid-name
+    urlRedirectType: str = ""
+    urlRedirectTitle: str = ""
+    urlRedirectDescription: str = ""
+    urlRedirectFavIcon: str = ""
+    urlRedirectKeywords: str = ""
+    urlAppend: bool = False
 
     def import_records(self, data: dict, domain: str = "", root: str = ""):
         """Update records by providing a dict"""
@@ -85,11 +92,12 @@ class Domain:
 
             # Type and content are straightforward, we don't need to convert it
             rec_yaml: dict[str, str | int] = {"type": rec.type, "content": rec.content}
-            # TTL and prio will be set unless it's the default value
-            if rec.ttl != Record.ttl:
-                rec_yaml["ttl"] = rec.ttl
-            if rec.prio != Record.prio:
-                rec_yaml["prio"] = rec.prio
+
+            # All the other attributes unless they have the default value
+            # This is, in RECORD_KEYS, all from the 5th element, ttl
+            for attr in RECORD_KEYS[4:]:
+                if getattr(rec, attr) != getattr(Record, attr):
+                    rec_yaml[attr] = getattr(rec, attr)
 
             data[name].append(rec_yaml)
 

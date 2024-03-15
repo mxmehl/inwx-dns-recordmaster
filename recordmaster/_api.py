@@ -86,6 +86,10 @@ def inwx_api(
         logging.info("API call for '%s' has not been executed in dry-run mode", method)
         return {}
 
+    for key, value in params.items():
+        if isinstance(value, bool):
+            params[key] = 1 if value else 0
+
     api_result = api.call_api(api_method=method, method_params=params)
 
     # Handle return codes

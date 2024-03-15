@@ -19,9 +19,9 @@ def sync_existing_local_to_remote(
     """Compare previously matched local records to remote ones. If differences, update remote"""
     # Loop over local records which have an ID, so matched to a remote entry
     for loc_rec in [loc_rec for loc_rec in domain.local_records if loc_rec.id]:
-        # For each ID, compare content, ttl and prio
+        # For each ID, compare content, ttl, prio etc, collect changes, and make API call
         changes = {}
-        for key in ("content", "ttl", "prio"):
+        for key in RECORD_KEYS[3:]:
             # Get local and corresponding remote attribute
             loc_val = getattr(loc_rec, key)
             rem_val = next(
