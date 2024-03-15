@@ -8,6 +8,8 @@ import argparse
 import logging
 import sys
 
+from INWX.Domrobot import ApiClient  # type: ignore
+
 from . import __version__, configure_logger
 from ._api import api_login
 from ._data import Domain, cache_data
@@ -109,29 +111,40 @@ parser.add_argument(
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
 
-def sync(args, api):
+def sync(
+    # pylint: disable=too-many-arguments, dangerous-default-value
+    api: ApiClient,
+    dns_config: str,
+    only_domain: str = "",
+    preserve_remote: bool = False,
+    ignore_types: list = ["SOA"],
+    dry: bool = False,
+    debug: bool = False,
+    interactive: bool = False,
+    api_response: str = "",
+):
     """The sync command"""
     # --api-response implies --dry
-    if args.api_response:
-        args.dry = True
+    if api_response:
+        dry = True
 
-        if not args.domain:
+        if not only_domain:
             print(
                 "ERROR: When using the -a/--api-response option you must also provide "
                 "the corresponding --domain"
             )
             sys.exit(1)
 
-    if args.dry:
+    if dry:
         logging.info("Dry-run mode activated. No changes on remote DNS entries will be executed.")
 
     # Load domain records configuration files
-    records_files = find_valid_local_records_files(args.dns_config)
+    records_files = find_valid_local_records_files(dns_config)
 
     # Normal procedure
     for domainname, records in combine_local_records(records_files).items():
         # If `-d`/`--domain` given, skip all other domains
-        if args.domain and domainname != args.domain:
+        if only_domain and domainname != only_domain:
             logging.info("[%s] Skipping the handling of this domain as requested by -d", domainname)
             continue
 
@@ -148,7 +161,7 @@ def sync(args, api):
         check_local_records_config(domain=domain.name, records=domain.local_records)
 
         # Read remote configuration into domain dataclass
-        convert_remote_records_to_data(api, domain, args.api_response)
+        convert_remote_records_to_data(api, domain, api_response)
 
         # Compare remote records with the local ones. The general idea is to
         # make a multi-step sync:
@@ -174,27 +187,25 @@ def sync(args, api):
         unmatched_local = [loc_rec for loc_rec in domain.local_records if not loc_rec.id]
 
         # Write current data to cache file in order to ease recoveries
-        cache_data(domain, args.debug)
+        cache_data(domain, debug)
 
         # 2. Sync local to existing remote records
-        sync_existing_local_to_remote(
-            api, domain=domain, dry=args.dry, interactive=args.interactive
-        )
+        sync_existing_local_to_remote(api, domain=domain, dry=dry, interactive=interactive)
 
         # 3. Create records that only exist locally at remote
         create_missing_at_remote(
-            api, domain=domain, records=unmatched_local, dry=args.dry, interactive=args.interactive
+            api, domain=domain, records=unmatched_local, dry=dry, interactive=interactive
         )
 
         # 4. Delete records that only exist remotely, unless their types are ignored
-        if not args.preserve_remote:
+        if not preserve_remote:
             delete_unconfigured_at_remote(
                 api,
                 domain=domain,
                 records=unmatched_remote,
-                dry=args.dry,
-                interactive=args.interactive,
-                ignore_types=args.ignore_types,
+                dry=dry,
+                interactive=interactive,
+                ignore_types=ignore_types,
             )
         else:
             logging.info(
@@ -205,17 +216,23 @@ def sync(args, api):
             )
 
 
-def convert(args, api):
+def convert(
+    # pylint: disable=dangerous-default-value
+    api: ApiClient,
+    converted_domain: str,
+    ignore_types: list = ["SOA"],
+    api_response: str = "",
+):
     """The convert command"""
     # Create and initiate domain dataclass
     domain = Domain()
-    domain.name = args.domain
+    domain.name = converted_domain
 
     # Read remote configuration into domain dataclass
-    convert_remote_records_to_data(api, domain, args.api_response)
+    convert_remote_records_to_data(api, domain, api_response)
 
     # Convert to YAML
-    yml_dict = domain.to_local_conf_format(domain.remote_records, args.ignore_types)
+    yml_dict = domain.to_local_conf_format(domain.remote_records, ignore_types)
     logging.info(
         "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
         domain.name,
@@ -240,9 +257,24 @@ def main():
 
     # Figure out which command to run
     if args.command == "sync":
-        sync(args, api)
+        sync(
+            api=api,
+            dns_config=args.dns_config,
+            only_domain=args.domain,
+            preserve_remote=args.preserve_remote,
+            ignore_types=args.ignore_types,
+            dry=args.dry,
+            debug=args.debug,
+            interactive=args.interactive,
+            api_response=args.api_response,
+        )
     elif args.command == "convert":
-        convert(args, api)
+        convert(
+            api=api,
+            converted_domain=args.domain,
+            ignore_types=args.ignore_types,
+            api_response=args.api_response,
+        )
     else:
         logging.error("No valid command provided!")
         sys.exit(1)
