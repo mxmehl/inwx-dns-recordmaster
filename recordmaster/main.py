@@ -31,7 +31,7 @@ from ._sync_records import (
 parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
 )
-subparsers = parser.add_subparsers(dest="command", help="Available commands")
+subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
 
 # Sync command
 parser_sync = subparsers.add_parser(
