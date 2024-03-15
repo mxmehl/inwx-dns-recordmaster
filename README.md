@@ -15,6 +15,21 @@ Manage DNS nameserver records of INWX domains via YAML files and API requests. L
 
 Note: This is no official software project by INWX, it just kindly uses their public API.
 
+- [Overview](#overview)
+- [Install](#install)
+- [Configuration](#configuration)
+  - [App/API configuration](#appapi-configuration)
+  - [DNS records configuration](#dns-records-configuration)
+- [Run the program](#run-the-program)
+  - [Synchronisation mode](#synchronisation-mode)
+  - [Conversion mode](#conversion-mode)
+- [Contribute and Develop](#contribute-and-develop)
+- [Troubleshooting](#troubleshooting)
+  - [Debug and dry-run](#debug-and-dry-run)
+  - [I deleted all my productive records!](#i-deleted-all-my-productive-records)
+  - [Simulate API response](#simulate-api-response)
+- [License](#license)
+
 
 ## Overview
 
@@ -94,7 +109,7 @@ If you already have a domain configured at INWX whose records you want to migrat
 
 You can execute the program using the command `inwx-dnsrm`. `inwx-dnsrm --help` shows all available arguments and options.
 
-The program has two main command: `sync` and `convert`.
+The program has two main commands: `sync` and `convert`.
 
 
 ### Synchronisation mode
