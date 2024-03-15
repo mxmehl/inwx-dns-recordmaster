@@ -47,8 +47,9 @@ class Record:
                 setattr(self, key, val)
             else:
                 logging.warning(
-                    "Ignored importing record data for domain '%s'. Key: '%s', Value: '%s'",
+                    "Ignored importing record data for domain '%s.%s'. Key: '%s', Value: '%s'",
                     domain,
+                    self.name,
                     key,
                     val,
                 )
