@@ -14,6 +14,7 @@ from ._data import Domain, cache_data
 from ._get_records import (
     check_local_records_config,
     combine_local_records,
+    convert_dict_to_yaml,
     convert_local_records_to_data,
     convert_remote_records_to_data,
     find_valid_local_records_files,
@@ -38,6 +39,14 @@ parser.add_argument(
     "-d",
     "--domain",
     help="Only run the program for the given domain",
+)
+parser.add_argument(
+    "--convert-remote",
+    action="store_true",
+    help=(
+        "Convert the internal data format of records to the local YAML configuration. "
+        "Will not make any modifications at the remote."
+    ),
 )
 parser.add_argument(
     "-i",
@@ -134,6 +143,17 @@ def main():
 
         # Read remote configuration into domain dataclass
         convert_remote_records_to_data(api, domain, args.api_response)
+
+        # Return the remote records as local YAML configuration, if wanted
+        if args.convert_remote:
+            yml_dict = domain.to_local_conf_format(domain.remote_records)
+            logging.info(
+                "[%s] Remote records at INWX convert to local YAML configuration format:\n\n%s",
+                domain.name,
+                convert_dict_to_yaml(yml_dict),
+            )
+            logging.info("[%s] Stopping handling this domain due to --convert-remote", domain.name)
+            continue
 
         # Compare remote records with the local ones. The general idea is to
         # make a multi-step sync:
