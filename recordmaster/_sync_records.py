@@ -61,6 +61,9 @@ def sync_existing_local_to_remote(
                 **changes,
             )
 
+            # Update domain stats
+            domain.stats_add("updated", 1)
+
 
 def create_missing_at_remote(
     api: ApiClient, domain: Domain, records: list[Record], dry: bool, interactive: bool
@@ -85,6 +88,9 @@ def create_missing_at_remote(
             **newrecord,
         )
 
+    # Update domain stats
+    domain.stats_add("added", len(records))
+
 
 def delete_unconfigured_at_remote(
     # pylint: disable=too-many-arguments
@@ -106,6 +112,9 @@ def delete_unconfigured_at_remote(
 
             # Run the deletion of the nameserver record with API
             inwx_api(api, "nameserver.deleteRecord", interactive=interactive, dry=dry, id=rec.id)
+
+            # Update domain stats
+            domain.stats_add("deleted", 1)
         else:
             logging.debug(
                 "[%s] This remote record is not configured locally, but you "

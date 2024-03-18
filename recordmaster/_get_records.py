@@ -167,3 +167,6 @@ def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_
         record.import_records(data=rec)
 
         domain.remote_records.append(record)
+
+    # Update domain stats
+    domain.stats_add("total_remote", len(domain.remote_records))
