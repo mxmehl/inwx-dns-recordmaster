@@ -28,6 +28,7 @@ Note: This is no official software project by INWX, it just kindly uses their pu
   - [Debug and dry-run](#debug-and-dry-run)
   - [I deleted all my productive records!](#i-deleted-all-my-productive-records)
   - [Simulate API response](#simulate-api-response)
+  - [URL records](#url-records)
 - [License](#license)
 
 
@@ -214,6 +215,11 @@ This could look like the following:
 ```
 
 In order to get this output from an existing domain, you can run the program with the `--debug` flag and search for the line starting with `Response (nameserver.info):`.
+
+
+### URL Records
+
+INWX has [URL records](https://kb.inwx.com/en-us/3-nameserver/106-how-can-i-forward-a-domain-to-an-internet-address) that allow for redirections of a domain to another domain. These records are somewhat supported by this tool, but there are [several issues and bugs](https://github.com/mxmehl/inwx-dns-recordmaster/pull/23). It's recommended to add and edit these records in the web interface and not via this tool as the INWX API doesn't seem to be reliable, but you can still store these configurations locally.
 
 
 ## License

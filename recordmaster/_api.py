@@ -86,6 +86,7 @@ def inwx_api(
         logging.info("API call for '%s' has not been executed in dry-run mode", method)
         return {}
 
+    # Convert boolean values to 0/1 as this is what the INWX seems to expect
     for key, value in params.items():
         if isinstance(value, bool):
             params[key] = 1 if value else 0
