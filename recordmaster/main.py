@@ -213,6 +213,19 @@ def sync(
                 len(unmatched_remote),
             )
 
+        # Finally, show stats about this domain
+        domain.stats_calc()
+        logging.info(
+            "[%s] Domain synchronised with %s changes: %s updated, %s added, %s deleted, "
+            "%s unchanged",
+            domain.name,
+            domain.stats["changed"],
+            domain.stats["updated"],
+            domain.stats["added"],
+            domain.stats["deleted"],
+            domain.stats["unchanged"],
+        )
+
 
 def convert(
     # pylint: disable=dangerous-default-value
