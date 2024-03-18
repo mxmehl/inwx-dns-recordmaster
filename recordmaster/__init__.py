@@ -9,7 +9,21 @@ from importlib.metadata import version
 
 __version__ = version("inwx-dns-recordmaster")
 
-RECORD_KEYS = ("id", "name", "type", "content", "ttl", "prio")
+# All record keys
+RECORD_KEYS = (
+    "id",
+    "name",
+    "type",
+    "content",
+    "ttl",
+    "prio",
+    "urlRedirectType",
+    "urlRedirectTitle",
+    "urlRedirectDescription",
+    "urlRedirectFavIcon",
+    "urlRedirectKeywords",
+    "urlAppend",
+)
 
 DEFAULT_APP_CONFIG = """# App configuration for INWX DNS Recordmaster.
 # This is not the place for domain records, these can be anywhere and used with the -c flag
