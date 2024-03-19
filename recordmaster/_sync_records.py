@@ -62,7 +62,7 @@ def sync_existing_local_to_remote(
             )
 
             # Update domain stats
-            domain.stats_add("updated", 1)
+            domain.stats.updated += 1
 
 
 def create_missing_at_remote(
@@ -89,7 +89,7 @@ def create_missing_at_remote(
         )
 
     # Update domain stats
-    domain.stats_add("added", len(records))
+    domain.stats.added += len(records)
 
 
 def delete_unconfigured_at_remote(
@@ -104,17 +104,26 @@ def delete_unconfigured_at_remote(
     """Delete records that only exist remotely but not locally, except some types"""
     for rec in records:
         if rec.type not in ignore_types:
+            # logging.info(
+            #     "[%s] Deleting record at remote as it is not configured locally: %s",
+            #     domain.name,
+            #     rec,
+            # )
             logging.info(
-                "[%s] Deleting record at remote as it is not configured locally: %s",
+                "[%s] Deleting record at remote as it is not configured locally: "
+                "id=%s, type=%s, name=%s, content=%s",
                 domain.name,
-                rec,
+                rec.id,
+                rec.type,
+                rec.name,
+                rec.content,
             )
 
             # Run the deletion of the nameserver record with API
             inwx_api(api, "nameserver.deleteRecord", interactive=interactive, dry=dry, id=rec.id)
 
             # Update domain stats
-            domain.stats_add("deleted", 1)
+            domain.stats.deleted += 1
         else:
             logging.debug(
                 "[%s] This remote record is not configured locally, but you "
@@ -122,3 +131,6 @@ def delete_unconfigured_at_remote(
                 domain.name,
                 rec,
             )
+
+            # Update domain stats
+            domain.stats.ignored += 1

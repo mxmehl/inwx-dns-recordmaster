@@ -169,4 +169,4 @@ def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_
         domain.remote_records.append(record)
 
     # Update domain stats
-    domain.stats_add("total_remote", len(domain.remote_records))
+    domain.stats.total_remote = len(domain.remote_records)
