@@ -12,8 +12,6 @@ from . import RECORD_KEYS
 from ._api import inwx_api
 from ._data import Domain, Record
 
-from operator import attrgetter
-
 
 def sync_existing_local_to_remote(
     api: ApiClient, domain: Domain, dry: bool, interactive: bool

@@ -103,7 +103,7 @@ class Domain:
     remote_records: list[Record] = field(default_factory=list)
     local_records: list[Record] = field(default_factory=list)
     # Stats
-    stats: DomainStats = DomainStats()
+    stats: DomainStats = field(default_factory=DomainStats)
 
     def to_local_conf_format(self, records: list[Record], ignore_types: list) -> dict:
         """
