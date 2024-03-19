@@ -63,6 +63,36 @@ class Record:  # pylint: disable=too-many-instance-attributes
 
 
 @dataclass
+class DomainStats:
+    """Dataclass holding general statistics about the handling of a domain"""
+
+    total_remote: int = 0
+    updated: int = 0
+    added: int = 0
+    deleted: int = 0
+    unchanged: int = 0
+    changed: int = 0
+
+    def stats_add(self, category: str, amount: int) -> None:
+        """Increase stats per domain for a category by a certain number"""
+
+        new_amount = getattr(self, category) + amount
+
+        setattr(self, category, new_amount)
+
+    def stats_calc(self) -> None:
+        """Calculate the number of unchanged records based on updates and removals"""
+        # unchanged_no = self.stats["total_remote"] - self.stats["updated"] - self.stats["deleted"]
+        # changes_no = self.stats["updated"] + self.stats["added"] + self.stats["deleted"]
+
+        unchanged_no = self.total_remote - self.updated - self.deleted
+        changes_no = self.updated + self.added + self.deleted
+
+        self.stats_add("unchanged", unchanged_no)
+        self.stats_add("changed", changes_no)
+
+
+@dataclass
 class Domain:
     """Dataclass holding general domain information"""
 
@@ -72,16 +102,7 @@ class Domain:
     remote_records: list[Record] = field(default_factory=list)
     local_records: list[Record] = field(default_factory=list)
     # Stats
-    stats: dict[str, int] = field(
-        default_factory=lambda: {
-            "total_remote": 0,
-            "updated": 0,
-            "added": 0,
-            "deleted": 0,
-            "unchanged": 0,
-            "changed": 0,
-        }
-    )
+    stats: DomainStats = DomainStats()
 
     def to_local_conf_format(self, records: list[Record], ignore_types: list) -> dict:
         """
@@ -113,22 +134,6 @@ class Domain:
             data[name].append(rec_yaml)
 
         return {convert_punycode(self.name, False): data}
-
-    def stats_add(self, category: str, amount: int) -> None:
-        """Increase stats per domain for a category by a certain number"""
-        categories = ("total_remote", "updated", "added", "deleted", "unchanged", "changed")
-        if category not in categories:
-            raise ValueError(f"Stats category not valid. Expected one of: {categories}")
-
-        self.stats[category] += amount
-
-    def stats_calc(self) -> None:
-        """Calculate the number of unchanged records based on updates and removals"""
-        unchanged_no = self.stats["total_remote"] - self.stats["updated"] - self.stats["deleted"]
-        changes_no = self.stats["updated"] + self.stats["added"] + self.stats["deleted"]
-
-        self.stats_add("unchanged", unchanged_no)
-        self.stats_add("changed", changes_no)
 
 
 def dc2json(domain: Domain) -> str:
