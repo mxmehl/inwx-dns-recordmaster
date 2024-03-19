@@ -73,23 +73,11 @@ class DomainStats:
     unchanged: int = 0
     changed: int = 0
 
-    def stats_add(self, category: str, amount: int) -> None:
-        """Increase stats per domain for a category by a certain number"""
-
-        new_amount = getattr(self, category) + amount
-
-        setattr(self, category, new_amount)
-
     def stats_calc(self) -> None:
         """Calculate the number of unchanged records based on updates and removals"""
-        # unchanged_no = self.stats["total_remote"] - self.stats["updated"] - self.stats["deleted"]
-        # changes_no = self.stats["updated"] + self.stats["added"] + self.stats["deleted"]
 
-        unchanged_no = self.total_remote - self.updated - self.deleted
-        changes_no = self.updated + self.added + self.deleted
-
-        self.stats_add("unchanged", unchanged_no)
-        self.stats_add("changed", changes_no)
+        self.unchanged = self.total_remote - self.updated - self.deleted
+        self.changed = self.updated + self.added + self.deleted
 
 
 @dataclass
