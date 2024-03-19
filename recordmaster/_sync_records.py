@@ -12,6 +12,8 @@ from . import RECORD_KEYS
 from ._api import inwx_api
 from ._data import Domain, Record
 
+from operator import attrgetter
+
 
 def sync_existing_local_to_remote(
     api: ApiClient, domain: Domain, dry: bool, interactive: bool
@@ -104,10 +106,19 @@ def delete_unconfigured_at_remote(
     """Delete records that only exist remotely but not locally, except some types"""
     for rec in records:
         if rec.type not in ignore_types:
+            # logging.info(
+            #     "[%s] Deleting record at remote as it is not configured locally: %s",
+            #     domain.name,
+            #     rec,
+            # )
             logging.info(
-                "[%s] Deleting record at remote as it is not configured locally: %s",
+                "[%s] Deleting record at remote as it is not configured locally: "
+                "id=%s, type=%s, name=%s, content=%s",
                 domain.name,
-                rec,
+                rec.id,
+                rec.type,
+                rec.name,
+                rec.content,
             )
 
             # Run the deletion of the nameserver record with API
