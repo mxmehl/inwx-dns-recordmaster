@@ -74,11 +74,23 @@ class DomainStats:
     unchanged: int = 0
     changed: int = 0
 
-    def stats_calc(self) -> None:
+    def stats_calc(self, domainname: str) -> None:
         """Calculate the number of unchanged records based on updates and removals"""
 
         self.unchanged = self.total_remote - self.updated - self.deleted
         self.changed = self.updated + self.added + self.deleted
+
+        logging.info(
+            "[%s] Domain synchronised with %s changes: %s updated, %s added, %s deleted. "
+            "%s ignored, %s unchanged",
+            domainname,
+            self.changed,
+            self.updated,
+            self.added,
+            self.deleted,
+            self.ignored,
+            self.unchanged,
+        )
 
 
 @dataclass
