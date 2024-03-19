@@ -122,3 +122,6 @@ def delete_unconfigured_at_remote(
                 domain.name,
                 rec,
             )
+
+            # Update domain stats
+            domain.stats.ignored += 1

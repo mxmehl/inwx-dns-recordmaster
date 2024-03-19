@@ -70,6 +70,7 @@ class DomainStats:
     updated: int = 0
     added: int = 0
     deleted: int = 0
+    ignored: int = 0
     unchanged: int = 0
     changed: int = 0
 

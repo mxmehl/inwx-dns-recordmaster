@@ -216,13 +216,14 @@ def sync(
         # Finally, show stats about this domain
         domain.stats.stats_calc()
         logging.info(
-            "[%s] Domain synchronised with %s changes: %s updated, %s added, %s deleted, "
-            "%s unchanged",
+            "[%s] Domain synchronised with %s changes: %s updated, %s added, %s deleted. "
+            "%s ignored, %s unchanged",
             domain.name,
             domain.stats.changed,
             domain.stats.updated,
             domain.stats.added,
             domain.stats.deleted,
+            domain.stats.ignored,
             domain.stats.unchanged,
         )
 
