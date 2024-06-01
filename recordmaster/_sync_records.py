@@ -104,11 +104,6 @@ def delete_unconfigured_at_remote(
     """Delete records that only exist remotely but not locally, except some types"""
     for rec in records:
         if rec.type not in ignore_types:
-            # logging.info(
-            #     "[%s] Deleting record at remote as it is not configured locally: %s",
-            #     domain.name,
-            #     rec,
-            # )
             logging.info(
                 "[%s] Deleting record at remote as it is not configured locally: "
                 "id=%s, type=%s, name=%s, content=%s",

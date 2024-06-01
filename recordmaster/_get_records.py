@@ -74,9 +74,11 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     # Read local domain config
     logging.debug("[%s] Reading local domain config: %s", domain.name, records)
     # Records for main domain are under the `.` key
-    root_records = records.get(".", {})
+    root_records = records.pop(".", {})
+    # Read `--options` key
+    domain.options = records.pop("--options", {})
     # All the other keys are supposed to be subdomains
-    sub_records = {k: records[k] for k in set(list(records.keys())) - set(".")}
+    sub_records = {k: records[k] for k in set(list(records.keys()))}
 
     # Adding root records
     for rec in root_records:
@@ -147,6 +149,30 @@ def check_local_records_config(domain: str, records: list[Record]):
             no_ints,
         )
         sys.exit(1)
+
+
+def derive_domain_options(domain: Domain, **global_options):
+    """Save valid options for domain in dataclass. If set locally, this
+    overrides the global option"""
+    for option, global_value in global_options.items():
+        # If no local option is set, we use the global value
+        if option not in domain.options:
+            domain.options[option] = global_value
+        # Inform when global option diverges from the local option
+        elif global_value != domain.options[option]:
+            logging.info(
+                "[%s] In the domain configuration, the option '%s' is set to '%s' "
+                "while the program is invoked with '%s'. The domain-specific "
+                "option will override the global option.",
+                domain.name,
+                option,
+                domain.options[option],
+                global_value,
+            )
+
+    # ignore_types is typically a string, but we need in as listg in multiple
+    # places. Do the conversion here
+    domain.options["ignore_types"] = [s.strip() for s in domain.options["ignore_types"].split(",")]
 
 
 def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_file: str):

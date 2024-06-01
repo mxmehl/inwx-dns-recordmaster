@@ -6,6 +6,7 @@
 
 import logging
 from importlib.metadata import version
+from typing import TypedDict
 
 __version__ = version("inwx-dns-recordmaster")
 
@@ -25,6 +26,11 @@ RECORD_KEYS = (
     "urlAppend",
 )
 
+# Default values for options
+DefaultOptionsType = TypedDict("DefaultOptionsType", {"ignore_types": str, "preserve_remote": bool})
+DEFAULT_OPTIONS: DefaultOptionsType = {"ignore_types": "SOA", "preserve_remote": False}
+
+# Default app configuration. Will be created as file if not present
 DEFAULT_APP_CONFIG = """# App configuration for INWX DNS Recordmaster.
 # This is not the place for domain records, these can be anywhere and used with the -c flag
 
