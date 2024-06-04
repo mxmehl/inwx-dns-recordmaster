@@ -104,6 +104,8 @@ class Domain:
     local_records: list[Record] = field(default_factory=list)
     # Stats
     stats: DomainStats = field(default_factory=DomainStats)
+    # Domain-specific options, either global or local, if present
+    options: dict = field(default_factory=dict)
 
     def to_local_conf_format(self, records: list[Record], ignore_types: list) -> dict:
         """

@@ -10,7 +10,7 @@ import sys
 
 from INWX.Domrobot import ApiClient  # type: ignore
 
-from . import __version__, configure_logger
+from . import DEFAULT_OPTIONS, __version__, configure_logger
 from ._api import api_login
 from ._data import Domain, cache_data, convert_punycode
 from ._get_records import (
@@ -19,6 +19,7 @@ from ._get_records import (
     convert_dict_to_yaml,
     convert_local_records_to_data,
     convert_remote_records_to_data,
+    derive_domain_options,
     find_valid_local_records_files,
 )
 from ._match_records import match_remote_to_local_records
@@ -77,7 +78,8 @@ parser_convert.add_argument(
     required=True,
     help=(
         "The domain whose records want to convert. "
-        "It respects the values for --ignore-types, so SOA records by default. "
+        "It respects the values for --ignore-types, so "
+        f"{DEFAULT_OPTIONS['ignore_types']} records by default. "
         "Will not make any modifications at the remote."
     ),
 )
@@ -86,7 +88,7 @@ parser_convert.add_argument(
 parser.add_argument(
     "-i",
     "--ignore-types",
-    default="SOA",
+    default=DEFAULT_OPTIONS["ignore_types"],
     help=(
         "A comma-separated list of record types which will be ignored when "
         "considering remote records. Leave empty do consider all types. Example: -i SOA,NS."
@@ -115,12 +117,14 @@ def sync(
     api: ApiClient,
     dns_config: str,
     only_domain: str = "",
-    preserve_remote: bool = False,
-    ignore_types: list = ["SOA"],
     dry: bool = False,
     debug: bool = False,
     interactive: bool = False,
     api_response: str = "",
+    # The following options can also be overriden in the YAML conf files for
+    # single domains
+    preserve_remote_global: bool = DEFAULT_OPTIONS["preserve_remote"],
+    ignore_types_global: str = DEFAULT_OPTIONS["ignore_types"],
 ):
     """The sync command"""
     # --api-response implies --dry
@@ -157,6 +161,15 @@ def sync(
 
         # Sanitize local configuration
         check_local_records_config(domain=domain.name, records=domain.local_records)
+
+        # Define the valid options for this domain, derived from the global
+        # options and the domain-specific ones
+        derive_domain_options(
+            domain,
+            # options that can be overridden locally
+            preserve_remote=preserve_remote_global,
+            ignore_types=ignore_types_global,
+        )
 
         # Read remote configuration into domain dataclass
         convert_remote_records_to_data(api, domain, api_response)
@@ -196,14 +209,14 @@ def sync(
         )
 
         # 4. Delete records that only exist remotely, unless their types are ignored
-        if not preserve_remote:
+        if not domain.options["preserve_remote"]:
             delete_unconfigured_at_remote(
                 api,
                 domain=domain,
                 records=unmatched_remote,
                 dry=dry,
                 interactive=interactive,
-                ignore_types=ignore_types,
+                ignore_types=domain.options["ignore_types"],
             )
         else:
             logging.info(
@@ -221,7 +234,7 @@ def convert(
     # pylint: disable=dangerous-default-value
     api: ApiClient,
     converted_domain: str,
-    ignore_types: list = ["SOA"],
+    ignore_types_global: str = DEFAULT_OPTIONS["ignore_types"],
     api_response: str = "",
 ):
     """The convert command"""
@@ -233,7 +246,9 @@ def convert(
     convert_remote_records_to_data(api, domain, api_response)
 
     # Convert to YAML
-    yml_dict = domain.to_local_conf_format(domain.remote_records, ignore_types)
+    yml_dict = domain.to_local_conf_format(
+        domain.remote_records, [s.strip() for s in ignore_types_global.split(",")]
+    )
     logging.info(
         "[%s] Remote records at INWX convert to local YAML configuration format:\n",
         domain.name,
@@ -245,9 +260,6 @@ def main():
     "Main function"
     # Process arguments
     args = parser.parse_args()
-
-    # Convert --ignore-types to list if it's just a string (the default)
-    args.ignore_types = args.ignore_types.split(",")
 
     # Set logger
     configure_logger(args=args)
@@ -261,8 +273,8 @@ def main():
             api=api,
             dns_config=args.dns_config,
             only_domain=args.domain,
-            preserve_remote=args.preserve_remote,
-            ignore_types=args.ignore_types,
+            preserve_remote_global=args.preserve_remote,
+            ignore_types_global=args.ignore_types,
             dry=args.dry,
             debug=args.debug,
             interactive=args.interactive,
@@ -272,7 +284,7 @@ def main():
         convert(
             api=api,
             converted_domain=args.domain,
-            ignore_types=args.ignore_types,
+            ignore_types_global=args.ignore_types,
             api_response=args.api_response,
         )
     else:

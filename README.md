@@ -20,6 +20,7 @@ Note: This is no official software project by INWX, it just kindly uses their pu
 - [Configuration](#configuration)
   - [App/API configuration](#appapi-configuration)
   - [DNS records configuration](#dns-records-configuration)
+    - [Domain-specific override options](#domain-specific-override-options)
 - [Run the program](#run-the-program)
   - [Synchronisation mode](#synchronisation-mode)
   - [Conversion mode](#conversion-mode)
@@ -105,6 +106,24 @@ However, there are default and extendable exceptions:
 
 If you already have a domain configured at INWX whose records you want to migrate to your local DNS records configuration, there is the convert command: `inwx-dnsrm convert --domain example.com`. This enables you to take the DNS config at INWX for a specific domain, put it in your local configuration, and start from this point onwards. You don't have to manually write long configuration files from scratch, unless you want to.
 
+
+#### Domain-specific override options
+
+`--preserve-remote` and `--ignore-types` are handy options for this program if you want to customise how to interact with remote records. However, if you have multiple domains configured locally, you may want to treat some of them differently than the others. One way might be to run the program multiple times with individual `-d` arguments, but that's obviously burdensome.
+
+This is why you can also override these options in the YAML configuration files. Here is an example:
+
+```yaml
+example.com:
+  # Override options to preserve remote records that are not configured locally.
+  # This is equivalent to `--preserve-remote` but is only applied to this domain
+  --options:
+    preserve_remote: true
+  # Records configuring only extra.example.com
+  extra:
+    - type: TXT
+      content: "This is my custom TXT record, all others are ignored"
+```
 
 ## Run the program
 

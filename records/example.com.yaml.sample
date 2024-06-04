@@ -3,6 +3,11 @@
 # SPDX-License-Identifier: CC0-1.0
 
 example.com:
+  # Optional override options to preserve remote records that are not configured locally.
+  # This is equivalent to `--preserve-remote` but is only applied to this domain
+  # --options:
+  #   preserve_remote: true
+  #   ignore_types: SOA,NS
   # Records configuring example.com
   .:
     - type: A
