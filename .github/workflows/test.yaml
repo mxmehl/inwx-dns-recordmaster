@@ -75,12 +75,10 @@ jobs:
           sed -i "s|__INWX_OTE_PASS__|${{ secrets.INWX_OTE_PASS }}|" /home/runner/.config/inwx-dns-recordmaster/config.toml
 
       - name: Run with first records configuration
-        run: poetry run inwx-dnsrm sync -c tests/records/
+        run: poetry run inwx-dnsrm sync -c tests/records1/
 
       - name: Run with second records configuration
-        run: |
-          cp tests/records/test-mehl.mx.yaml.changes tests/records/test-mehl.mx.yaml
-          poetry run inwx-dnsrm sync -c tests/records/
+        run: poetry run inwx-dnsrm sync -c tests/records2/
 
       - name: Convert the remote records to YAML
         run: |
