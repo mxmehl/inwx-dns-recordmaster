@@ -12,7 +12,7 @@ from INWX.Domrobot import ApiClient  # type: ignore
 
 from . import DEFAULT_OPTIONS, __version__, configure_logger
 from ._api import api_login
-from ._data import Domain, cache_data, convert_punycode
+from ._data import Domain, DomainStatsSummary, cache_data, convert_punycode
 from ._get_records import (
     check_local_records_config,
     combine_local_records,
@@ -112,7 +112,7 @@ parser.add_argument(
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
 
-def sync(
+def sync(  # pylint: disable=too-many-locals
     # pylint: disable=too-many-arguments, dangerous-default-value
     api: ApiClient,
     dns_config: str,
@@ -143,6 +143,9 @@ def sync(
 
     # Load domain records configuration files
     records_files = find_valid_local_records_files(dns_config)
+
+    # Create empty Stats Summary dataclass
+    statssummary = DomainStatsSummary()
 
     # Normal procedure
     for domainname, records in combine_local_records(records_files).items():
@@ -226,8 +229,11 @@ def sync(
                 len(unmatched_remote),
             )
 
-        # Finally, show stats about this domain
+        # Finally, gather stats about this domain
         domain.stats.stats_calc(domain.name)
+        statssummary.stats.update(domain.stats.dc2dict())
+
+    statssummary.print_summary()
 
 
 def convert(
