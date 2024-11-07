@@ -21,6 +21,7 @@ Note: This is no official software project by INWX, it just kindly uses their pu
   - [App/API configuration](#appapi-configuration)
   - [DNS records configuration](#dns-records-configuration)
     - [Domain-specific override options](#domain-specific-override-options)
+  - [Examples](#examples)
 - [Run the program](#run-the-program)
   - [Synchronisation mode](#synchronisation-mode)
   - [Conversion mode](#conversion-mode)
@@ -47,13 +48,39 @@ Configuration of the DNS records is done in YAML files with a quite simple struc
 
 ## Install
 
-The tool depends on the following applications:
+This Python program is available under the name `inwx-dns-recordmaster`. After installation, you can invoke it with the command `inwx-dnsrm`.
 
-* Python 3
+### Install and run via pipx (Recommended)
 
-You can install the latest release via `pip3 install inwx-dns-recordmaster`
+[pipx](https://pypa.github.io/pipx/) makes installing and running Python programs easier and avoid conflicts with other packages. Install it with
 
-The tool is executable with `inwx-dnsrm`. The `--help` flag informs you about the required and available commands.
+```sh
+pip3 install pipx
+```
+
+The following one-liner both installs and runs this program from [PyPI](https://pypi.org/project/inwx-dns-recordmaster/):
+
+```sh
+pipx run inwx-dns-recordmaster
+```
+
+If you want to be able to use the program without prepending it with `pipx run` every time, install it globally like so:
+
+```sh
+pipx install inwx-dns-recordmaster
+```
+
+The tool's binary `inwx-dnsrm` will then be available in `~/.local/bin`, which must be added to your `$PATH`. On Windows, the required path for your environment may look like `%USERPROFILE%\AppData\Roaming\Python\Python310\Scripts`, depending on the Python version you have installed.
+
+To upgrade the program to the newest available version, run this command:
+
+```sh
+pipx upgrade inwx-dns-recordmaster
+```
+
+### Other installation methods
+
+You may also use pure `pip` or `poetry` to install this package.
 
 
 ## Configuration
@@ -124,6 +151,15 @@ example.com:
     - type: TXT
       content: "This is my custom TXT record, all others are ignored"
 ```
+
+### Examples
+
+OpenRail Association is a user of INWX DNS Recordmaster to manage some of its domains. You can take inspiration from their
+
+* [App/API configuration](https://github.com/OpenRailAssociation/openrail-dns/blob/main/config.toml)
+* [DNS records](https://github.com/OpenRailAssociation/openrail-dns/tree/main/records)
+* and [GitHub workflow](https://github.com/OpenRailAssociation/openrail-dns/blob/main/.github/workflows/sync-records.yaml)
+
 
 ## Run the program
 
