@@ -93,7 +93,7 @@ def create_missing_at_remote(
 
 
 def delete_unconfigured_at_remote(
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     api: ApiClient,
     domain: Domain,
     records: list[Record],
