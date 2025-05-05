@@ -42,6 +42,7 @@ mypy = "^1.8.0"
 types-pyyaml = "^6.0.12.12"
 types-toml = "^0.10.8.7"
 h11 = "^0.16.0"
+bump-my-version = "^1.1.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -57,3 +58,16 @@ line-length = 100
 # MYPY settings
 [tool.mypy]
 files = ["recordmaster/*.py"]
+
+# Bump-My-Version
+[tool.bumpversion]
+commit = true
+tag = true
+allow_dirty = false
+tag_name = "v{new_version}"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+regex = true
+search = "^version = \"{current_version}\""
+replace = "version = \"{new_version}\""
