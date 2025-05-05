@@ -41,6 +41,7 @@ isort = "^5.13.2"
 mypy = "^1.8.0"
 types-pyyaml = "^6.0.12.12"
 types-toml = "^0.10.8.7"
+h11 = "^0.16.0"
 
 [build-system]
 requires = ["poetry-core"]
