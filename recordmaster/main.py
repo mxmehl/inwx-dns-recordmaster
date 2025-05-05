@@ -113,7 +113,7 @@ parser.add_argument("--version", action="version", version="%(prog)s " + __versi
 
 
 def sync(  # pylint: disable=too-many-locals
-    # pylint: disable=too-many-arguments, dangerous-default-value
+    # pylint: disable=too-many-arguments, too-many-positional-arguments, dangerous-default-value
     api: ApiClient,
     dns_config: str,
     only_domain: str = "",
