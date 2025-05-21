@@ -12,4 +12,4 @@ jobs:
   osv-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: mxmehl/latest-release-vulnerability-status@v1
+      - uses: mxmehl/latest-release-vulnerability-status@71769afeefe3a1f2fae289a41b0983961317c557 # v1
