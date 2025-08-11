@@ -28,7 +28,7 @@ jobs:
             os: windows-latest
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: ./.github/actions/poetrybuild
         with:
           python: ${{ matrix.python-version }}
@@ -41,7 +41,7 @@ jobs:
   test-build-install:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
@@ -61,7 +61,7 @@ jobs:
   live-test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: ./.github/actions/poetrybuild
         with:
           poetry_args: --only main
@@ -88,7 +88,7 @@ jobs:
   pylint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: ./.github/actions/poetrybuild
       - name: Lint with pylint
         run: poetry run pylint recordmaster/
@@ -96,7 +96,7 @@ jobs:
   formatting:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: ./.github/actions/poetrybuild
       - name: Test formatting with isort and black
         run: |
@@ -106,7 +106,7 @@ jobs:
   mypy:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - uses: ./.github/actions/poetrybuild
       - name: Test typing with mypy
         run: poetry run mypy
@@ -115,6 +115,6 @@ jobs:
   reuse:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       - name: Check REUSE Compliance
         uses: fsfe/reuse-action@bb774aa972c2a89ff34781233d275075cbddf542 # v5
