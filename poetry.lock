@@ -112,18 +112,18 @@ files = [
 
 [[package]]
 name = "bump-my-version"
-version = "1.2.3"
+version = "1.2.4"
 description = "Version bump your Python project"
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "bump_my_version-1.2.3-py3-none-any.whl", hash = "sha256:620eac65828c86e60c6a9becf9eadc376181e81b47c0097a7b63e113b5cb256f"},
-    {file = "bump_my_version-1.2.3.tar.gz", hash = "sha256:7352af6f9454469a020493c2747cd7c88b0c7017dd216e3abb270a13745afa1b"},
+    {file = "bump_my_version-1.2.4-py3-none-any.whl", hash = "sha256:b60ac52c8972c5a7e1e478d0334015a993ba5c27fad1b04bde558d25c667b0f5"},
+    {file = "bump_my_version-1.2.4.tar.gz", hash = "sha256:998abb4f3774cf96137a77034a5a12a722b109b26a3afa044ec14622a0180fa3"},
 ]
 
 [package.dependencies]
-click = "<8.3"
+click = "<8.2.2"
 httpx = ">=0.28.1"
 pydantic = ">=2.0.0"
 pydantic-settings = "*"
