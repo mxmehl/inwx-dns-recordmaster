@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mxmehl/inwx-dns-recordmaster/main/records/inwx-dns-recordmaster.schema.json
+
 example.com:
   # Optional override options to preserve remote records that are not configured locally.
   # This is equivalent to `--preserve-remote` but is only applied to this domain
