@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "patternProperties": {
+      "^[a-zA-Z0-9_.-]+$": {
+        "type": "array",
+        "items": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "ttl": {
+                "type": "integer"
+              },
+              "prio": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "type",
+              "content"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  }
+}
