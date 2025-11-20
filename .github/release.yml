@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: 2025 Max Mehl <https://mehl.mx>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+changelog:
+  categories:
+    - title: Features and Fixes
+      labels:
+        - "*"
+      exclude:
+        labels:
+          - Renovate
+          - dependencies
+    - title: Dependencies
+      labels:
+        - Renovate
+        - dependencies
