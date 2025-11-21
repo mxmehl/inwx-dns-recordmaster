@@ -55,4 +55,4 @@ def get_app_config(key: str = ""):
     if key:
         return _read_app_config_file()[key]
 
-    return _read_app_config_file
+    return _read_app_config_file()
