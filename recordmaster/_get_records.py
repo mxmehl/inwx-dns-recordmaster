@@ -130,7 +130,7 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     for rec in root_records:
         record = Record()
 
-        record.import_records(domain=domain.name, data=rec)
+        record.import_records(data=rec, remote=False, domain=domain.name)
 
         domain.local_records.append(record)
 
@@ -142,7 +142,7 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
         for rec in recs:
             record = Record()
 
-            record.import_records(root=domain.name, domain=subdomain, data=rec)
+            record.import_records(data=rec, remote=False, root=domain.name, domain=subdomain)
 
             domain.local_records.append(record)
 
@@ -236,7 +236,7 @@ def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_
     for rec in domain_remote["record"]:
         record = Record()
 
-        record.import_records(data=rec)
+        record.import_records(data=rec, remote=True)
 
         domain.remote_records.append(record)
 
