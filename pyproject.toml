@@ -34,10 +34,10 @@ platformdirs = "^4.5.0"
 toml = "^0.10.2"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.9"
+pylint = "^4.0.0"
 pylama = "^8.4.1"
 black = "^25.11.0"
-isort = "^6.1.0"
+isort = "^7.0.0"
 mypy = "^1.18.2"
 types-pyyaml = "^6.0.12.20250915"
 types-toml = "^0.10.8.20240310"
