@@ -128,7 +128,7 @@ Please note that the general idea of this program is that ALL records are manage
 
 However, there are default and extendable exceptions:
 
-* By default, records of the type `SOA` are not considered as they change upon each change and are handled well by INWX. You can add additional record types with the `--ignore-types` argument if you don't want to handle them.
+* By default, records of the type `SOA` are not considered as they change upon each change and are handled well by INWX. You can add additional, comma-separated record types with the `--ignore-types` argument if you don't want to handle them. Example: `--ignore-types SOA,NS,TXT`
 * You can also blatantly ignore records that exist at INWX but not in your local configuration, using the `--preserve-remote` flag. This way, you only *update existing* and *add new* records, but don't *delete unconfigured* records at INWX.
 
 If you already have a domain configured at INWX whose records you want to migrate to your local DNS records configuration, there is the convert command: `inwx-dnsrm convert --domain example.com`. This enables you to take the DNS config at INWX for a specific domain, put it in your local configuration, and start from this point onwards. You don't have to manually write long configuration files from scratch, unless you want to.

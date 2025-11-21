@@ -11,9 +11,43 @@ from os import listdir, path
 
 import yaml
 from INWX.Domrobot import ApiClient  # type: ignore
+from jsonschema import FormatChecker, validate
+from jsonschema.exceptions import ValidationError
 
 from ._api import inwx_api
 from ._data import Domain, Record
+
+RECORDS_SCHEMA = {
+    "type": "object",
+    "properties": {},  # we have no predefined properties
+    "additionalProperties": {  # domain, can have any key name
+        "type": "object",
+        "properties": {  # --options key
+            "--options": {
+                "type": "object",
+                "properties": {
+                    "preserve_remote": {"type": "boolean"},
+                    "ignore_types": {"type": "string"},
+                },
+                "additionalProperties": False,
+            },
+        },
+        "additionalProperties": {  # subdomain, can have any key name
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string"},
+                    "content": {"type": "string"},
+                    "ttl": {"type": "integer"},
+                    "prio": {"type": "integer"},
+                },
+                "required": ["type", "content"],
+                "additionalProperties": False,
+            },
+        },
+    },
+}
 
 
 def find_valid_local_records_files(configdir: str) -> list[str]:
@@ -37,6 +71,16 @@ def find_valid_local_records_files(configdir: str) -> list[str]:
     return dcfg_files_abs
 
 
+def validate_config_schema(cfg: dict, schema: dict) -> None:
+    """Validate the config against a JSON schema"""
+    try:
+        validate(instance=cfg, schema=schema, format_checker=FormatChecker())
+    except ValidationError as e:
+        logging.critical("Config validation failed: %s", e.message)
+        raise ValueError(e) from None
+    logging.debug("Config validated successfully against schema.")
+
+
 def combine_local_records(records_files: list[str]) -> dict:
     """Combine all valid local records configuration files and put into one big dict"""
 
@@ -45,7 +89,9 @@ def combine_local_records(records_files: list[str]) -> dict:
     for recfile in records_files:
         with open(recfile, mode="r", encoding="UTF-8") as ymlfile:
             try:
+                logging.debug("Loading records file '%s'", recfile)
                 ymldata = yaml.safe_load(ymlfile)
+                validate_config_schema(ymldata, RECORDS_SCHEMA)
                 local_records_config = local_records_config | ymldata
             except yaml.YAMLError as exc:
                 logging.error("Loading configuration from '%s' failed: %s", recfile, exc)
