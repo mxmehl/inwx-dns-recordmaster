@@ -36,8 +36,19 @@ class Record:  # pylint: disable=too-many-instance-attributes
     urlRedirectKeywords: str = ""
     urlAppend: bool = False
 
-    def import_records(self, data: dict, domain: str = "", root: str = ""):
-        """Update records by providing a dict"""
+    def import_records(self, data: dict, remote: bool, domain: str = "", root: str = "") -> None:
+        """
+        Update records by providing a dict.
+
+        Args:
+            data (dict): The record data as dict.
+            remote (bool): Whether the record is remote (from API) or local (from config).
+            domain (str): The domain name, if needed to build full record name.
+            root (str): The root domain name, if needed to build full record name.
+
+        Returns:
+            None
+        """
 
         # If handling a subdomain record, prepend the root domain, if given
         if domain and root:
@@ -48,6 +59,10 @@ class Record:  # pylint: disable=too-many-instance-attributes
         # There is a name already provided in 'data'
         else:
             pass
+
+        # Convert local record to punycode if local data, to catch special chars
+        if not remote:
+            self.name = convert_punycode(self.name, is_punycode=True)
 
         for key, val in data.items():
             if key in RECORD_KEYS:
@@ -212,7 +227,15 @@ def cache_data(domain: Domain, debug: bool):
 
 
 def convert_punycode(domain: str, is_punycode: bool = True) -> str:
-    """Convert a domain name from human-readable to punycode, or vice versa"""
+    """
+    Convert a domain name from human-readable to punycode, or vice versa.
+
+    Args:
+        domain (str): The domain name to convert.
+        is_punycode (bool): If True, convert from punycode. If False, convert to punycode.
+    Returns:
+        str: The converted domain name.
+    """
     if is_punycode:
         return domain.encode("idna").decode()
 
