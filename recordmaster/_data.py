@@ -22,7 +22,7 @@ class Record:  # pylint: disable=too-many-instance-attributes
     """Dataclass holding a nameserver record, be it remote or local"""
 
     # nameserver details
-    id: int | None = None
+    id: str | None = None
     name: str = ""
     type: str = ""
     content: str = ""
