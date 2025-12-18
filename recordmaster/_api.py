@@ -51,7 +51,7 @@ def api_login(api_response_file: str = "", debug: bool = False) -> ApiClient:
         login_data = {
             "username": login_data.get("username"),
             "password": login_data.get("password"),
-            "shared_secret": login_data.get("secret"),
+            "shared_secret": login_data.get("shared_secret"),
         }
 
         # Error when no username and/or password set
