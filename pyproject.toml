@@ -96,8 +96,10 @@ include = ["recordmaster"]
 [tool.bumpversion]
 commit = true
 tag = true
+sign_tags = true
 allow_dirty = false
 tag_name = "v{new_version}"
+pre_commit_hooks = ["uv sync --upgrade", "git add uv.lock"]
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"
