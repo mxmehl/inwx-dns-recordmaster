@@ -11,7 +11,7 @@ on:
   pull_request:
 
 jobs:
-  # Test using the tool via poetry on different OSes and python versions
+  # Test using the tool via uv on different OSes and python versions
   test-os-python-matrix:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -29,12 +29,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: ./.github/actions/poetrybuild
+      - uses: ./.github/actions/uvbuild
         with:
           python: ${{ matrix.python-version }}
-          poetry_args: --only main
+          uv_args: --no-dev
       - name: Execute inwx-dns-recordmaster
-        run: poetry run inwx-dnsrm --help
+        run: uv run inwx-dnsrm --help
 
 
   # Test building the package and installing it via pip3
@@ -46,10 +46,10 @@ jobs:
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.14"
-      - name: Install poetry
-        run: pip install poetry
+      - name: Install uv
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
       - name: Build package
-        run: poetry build
+        run: uv build
       - name: Install package
         run: pip3 install dist/inwx_dns_recordmaster-*.tar.gz
       - name: Run package
@@ -62,9 +62,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: ./.github/actions/poetrybuild
+      - uses: ./.github/actions/uvbuild
         with:
-          poetry_args: --only main
+          uv_args: --no-dev
 
       - name: Create app configuration
         run: |
@@ -75,41 +75,41 @@ jobs:
           sed -i "s|__INWX_OTE_PASS__|${{ secrets.INWX_OTE_PASS }}|" /home/runner/.config/inwx-dns-recordmaster/config.toml
 
       - name: Run with first records configuration
-        run: poetry run inwx-dnsrm sync -c tests/records1/
+        run: uv run inwx-dnsrm sync -c tests/records1/
 
       - name: Run with second records configuration
-        run: poetry run inwx-dnsrm sync -c tests/records2/
+        run: uv run inwx-dnsrm sync -c tests/records2/
 
       - name: Convert the remote records to YAML
         run: |
-          poetry run inwx-dnsrm convert -d test-mehl.mx
+          uv run inwx-dnsrm convert -d test-mehl.mx
 
   # Formatting
   pylint:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: ./.github/actions/poetrybuild
+      - uses: ./.github/actions/uvbuild
       - name: Lint with pylint
-        run: poetry run pylint recordmaster/
+        run: uv run pylint recordmaster/
 
   formatting:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: ./.github/actions/poetrybuild
+      - uses: ./.github/actions/uvbuild
       - name: Test formatting with isort and black
         run: |
-          poetry run isort --check recordmaster/
-          poetry run black --check .
+          uv run isort --check recordmaster/
+          uv run black --check .
 
   mypy:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: ./.github/actions/poetrybuild
+      - uses: ./.github/actions/uvbuild
       - name: Test typing with mypy
-        run: poetry run mypy
+        run: uv run mypy
 
   # REUSE
   reuse:

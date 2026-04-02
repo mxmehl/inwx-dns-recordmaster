@@ -2,16 +2,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: "Reusable Poetry build workflow"
+name: "Reusable uv build workflow"
+description: "Reusable workflow to set up Python and install dependencies via uv. The Python version and additional uv arguments can be configured via inputs."
 inputs:
   python:
     default: "3.14"
     description: "Value for 'python-version'"
     required: false
     type: string
-  poetry_args:
+  uv_args:
     default: ""
-    description: "Additional arguments for the poetry install step'"
+    description: "Additional arguments for the uv install step'"
     required: false
     type: string
 runs:
@@ -21,8 +22,9 @@ runs:
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
         python-version: ${{ inputs.python }}
-    - name: Install dependencies
+    - name: Install uv
+      uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+    - name: Setup project
       run: |
-        pip install poetry
-        poetry install --no-interaction ${{ inputs.poetry_args }}
+        uv sync  --locked --all-extras --dev ${{ inputs.uv_args }}
       shell: bash

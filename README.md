@@ -80,7 +80,7 @@ pipx upgrade inwx-dns-recordmaster
 
 ### Other installation methods
 
-You may also use pure `pip` or `poetry` to install this package.
+You may also use pure `pip` or `uv` to install this package.
 
 
 ## Configuration
@@ -196,7 +196,7 @@ Run `inwx-dnsrm convert -h` to see all options.
 
 ## Contribute and Develop
 
-Contributions are welcome! The development is easiest with `poetry`: `poetry install` and `poetry run inwx-dnsrm` will get you started.
+Contributions are welcome! The development is easiest with `uv`: `uv sync` and `uv run inwx-dnsrm` will get you started.
 
 
 ## Troubleshooting
