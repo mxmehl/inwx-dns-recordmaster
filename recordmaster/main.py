@@ -2,13 +2,13 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-"""Sync INWX nameserver entries with local state"""
+"""Sync INWX nameserver entries with local state."""
 
 import argparse
 import logging
 import sys
 
-from INWX.Domrobot import ApiClient  # type: ignore
+from INWX.Domrobot import ApiClient
 
 from . import DEFAULT_OPTIONS, __version__, configure_logger
 from ._api import api_login
@@ -112,8 +112,7 @@ parser.add_argument(
 parser.add_argument("--version", action="version", version="%(prog)s " + __version__)
 
 
-def sync(  # pylint: disable=too-many-locals
-    # pylint: disable=too-many-arguments, too-many-positional-arguments, dangerous-default-value
+def sync(  # noqa: PLR0913
     api: ApiClient,
     dns_config: str,
     only_domain: str = "",
@@ -125,8 +124,8 @@ def sync(  # pylint: disable=too-many-locals
     # single domains
     preserve_remote_global: bool = DEFAULT_OPTIONS["preserve_remote"],
     ignore_types_global: str = DEFAULT_OPTIONS["ignore_types"],
-):
-    """The sync command"""
+) -> None:
+    """The sync command."""
     # --api-response implies --dry
     if api_response:
         dry = True
@@ -242,8 +241,8 @@ def convert(
     converted_domain: str,
     ignore_types_global: str = DEFAULT_OPTIONS["ignore_types"],
     api_response: str = "",
-):
-    """The convert command"""
+) -> None:
+    """The convert command."""
     # Create and initiate domain dataclass
     domain = Domain()
     domain.name = convert_punycode(converted_domain)
@@ -262,10 +261,10 @@ def convert(
     print(convert_dict_to_yaml(yml_dict))
 
 
-def main():
-    "Main function"
+def main() -> None:
+    """Main function."""
     # Process arguments
-    args = parser.parse_args()
+    args: argparse.Namespace = parser.parse_args()
 
     # Set logger
     configure_logger(args=args)

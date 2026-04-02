@@ -84,32 +84,21 @@ jobs:
         run: |
           uv run inwx-dnsrm convert -d test-mehl.mx
 
-  # Formatting
-  pylint:
+  # Quality checks
+  ruff:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/uvbuild
-      - name: Lint with pylint
-        run: uv run pylint recordmaster/
-
-  formatting:
+      - name: Lint with ruff
+        run: uv run ruff check
+  ty:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/uvbuild
-      - name: Test formatting with isort and black
-        run: |
-          uv run isort --check recordmaster/
-          uv run black --check .
-
-  mypy:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: ./.github/actions/uvbuild
-      - name: Test typing with mypy
-        run: uv run mypy
+      - name: Test typing with ty
+        run: uv run ty check
 
   # REUSE
   reuse:

@@ -7,3 +7,16 @@ use_versions_host_track = false
 
 [tools]
 uv = "latest"
+
+[tasks."lint:ty"]
+description = "Run ty type checks"
+run = "uv run ty check"
+
+[tasks."lint:ruff"]
+description = "Run ruff linter and formatter checks"
+run = ["uv run ruff check .", "uv run ruff format --check ."]
+
+[tasks.tests]
+description = "Run all tests and checks"
+depends = ["lint:*"]
+run = "echo 'SUCCESS: All checks passed!'"

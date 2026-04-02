@@ -2,15 +2,15 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-"""Functions for handling local configuration files"""
+"""Functions for handling local configuration files."""
 
 import json
 import logging
 import sys
-from os import listdir, path
+from pathlib import Path
 
 import yaml
-from INWX.Domrobot import ApiClient  # type: ignore
+from INWX.Domrobot import ApiClient
 from jsonschema import FormatChecker, validate
 from jsonschema.exceptions import ValidationError
 
@@ -51,28 +51,28 @@ RECORDS_SCHEMA = {
 
 
 def find_valid_local_records_files(configdir: str) -> list[str]:
-    """Get all local domain configuration files"""
+    """Get all local domain configuration files."""
     logging.debug("Gather locally configured domains from configuration directory '%s'", configdir)
 
     dcfg_files_abs = []
 
-    for file in listdir(configdir):
-        file = path.abspath(path.join(configdir, file))
-        if file.endswith((".yaml", ".yml")):
-            dcfg_files_abs.append(file)
-        elif file.endswith((".sample", ".git")):
+    for entry in Path(configdir).iterdir():
+        filepath = str(entry.resolve())
+        if filepath.endswith((".yaml", ".yml")):
+            dcfg_files_abs.append(filepath)
+        elif filepath.endswith((".sample", ".git")):
             pass
         else:
             logging.warning(
                 "File '%s' does not match naming convention and will be ignored",
-                file,
+                filepath,
             )
 
     return dcfg_files_abs
 
 
 def validate_config_schema(cfg: dict, schema: dict) -> None:
-    """Validate the config against a JSON schema"""
+    """Validate the config against a JSON schema."""
     try:
         validate(instance=cfg, schema=schema, format_checker=FormatChecker())
     except ValidationError as e:
@@ -82,25 +82,24 @@ def validate_config_schema(cfg: dict, schema: dict) -> None:
 
 
 def combine_local_records(records_files: list[str]) -> dict:
-    """Combine all valid local records configuration files and put into one big dict"""
-
+    """Combine all valid local records configuration files and put into one big dict."""
     local_records_config: dict = {}
 
     for recfile in records_files:
-        with open(recfile, mode="r", encoding="UTF-8") as ymlfile:
+        with open(recfile, encoding="UTF-8") as ymlfile:
             try:
                 logging.debug("Loading records file '%s'", recfile)
                 ymldata = yaml.safe_load(ymlfile)
                 validate_config_schema(ymldata, RECORDS_SCHEMA)
                 local_records_config = local_records_config | ymldata
-            except yaml.YAMLError as exc:
-                logging.error("Loading configuration from '%s' failed: %s", recfile, exc)
+            except yaml.YAMLError:
+                logging.exception("Loading configuration from '%s' failed", recfile)
 
     return local_records_config
 
 
 def convert_dict_to_yaml(data: dict) -> str:
-    """Convert a dict to YAML"""
+    """Convert a dict to YAML."""
     # sort data alphabetically, and make sure . will always be first
     data_sorted = {}
     for domain, records in data.items():
@@ -112,7 +111,7 @@ def convert_dict_to_yaml(data: dict) -> str:
 
 
 def convert_local_records_to_data(domain: Domain, records: dict) -> None:
-    """Read domain configuration with records from local file and put into dataclass"""
+    """Read domain configuration with records from local file and put into dataclass."""
     # If no records present, create empty dict
     if records is None:
         records = {}
@@ -124,7 +123,7 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
     # Read `--options` key
     domain.options = records.pop("--options", {})
     # All the other keys are supposed to be subdomains
-    sub_records = {k: records[k] for k in set(list(records.keys()))}
+    sub_records = {k: records[k] for k in set(records.keys())}
 
     # Adding root records
     for rec in root_records:
@@ -147,8 +146,8 @@ def convert_local_records_to_data(domain: Domain, records: dict) -> None:
             domain.local_records.append(record)
 
 
-def check_local_records_config(domain: str, records: list[Record]):
-    """Find common errors in local records confiuration files"""
+def check_local_records_config(domain: str, records: list[Record]) -> None:
+    """Find common errors in local records confiuration files."""
     # Find records with IDs
     local_ids = [rec for rec in records if rec.id is not None]
     if local_ids:
@@ -197,9 +196,12 @@ def check_local_records_config(domain: str, records: list[Record]):
         sys.exit(1)
 
 
-def derive_domain_options(domain: Domain, **global_options):
-    """Save valid options for domain in dataclass. If set locally, this
-    overrides the global option"""
+def derive_domain_options(domain: Domain, **global_options: str | bool) -> None:
+    """
+    Save valid options for domain in dataclass.
+
+    If set locally, this overrides the global option.
+    """
     for option, global_value in global_options.items():
         # If no local option is set, we use the global value
         if option not in domain.options:
@@ -221,14 +223,13 @@ def derive_domain_options(domain: Domain, **global_options):
     domain.options["ignore_types"] = [s.strip() for s in domain.options["ignore_types"].split(",")]
 
 
-def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_file: str):
-    """Request domain configuration with records from the remote (INWX) and put into dataclass"""
-
+def convert_remote_records_to_data(api: ApiClient, domain: Domain, api_response_file: str) -> None:
+    """Request domain configuration with records from the remote (INWX) and put into dataclass."""
     # Load remote configuration from remote via API call, or from local file
     if not api_response_file:
         domain_remote = inwx_api(api, "nameserver.info", domain=domain.name)["resData"]
     else:
-        with open(api_response_file, mode="r", encoding="UTF-8") as jsonfile:
+        with open(api_response_file, encoding="UTF-8") as jsonfile:
             domain_remote = json.load(jsonfile)
 
     domain.id = domain_remote["roId"]

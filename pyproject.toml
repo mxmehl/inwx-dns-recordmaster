@@ -49,11 +49,8 @@ inwx-dnsrm = "recordmaster.main:main"
 
 [dependency-groups]
 dev = [
-    "pylint>=4.0.0,<5",
-    "pylama>=8.4.1,<9",
-    "black>=26.0.0,<27",
-    "isort>=8.0.0,<9",
-    "mypy>=1.18.2,<2",
+    "ruff>=0.15.8",
+    "ty>=0.0.27",
     "types-pyyaml>=6.0.12.20250915,<7",
     "types-toml>=0.10.8.20240310,<0.11",
     "bump-my-version>=1.2.4,<2",
@@ -71,16 +68,29 @@ module-root = ""
 requires = ["uv_build>=0.11.3,<0.12.0"]
 build-backend = "uv_build"
 
-# FORMATTING settings
-[tool.isort]
-profile = "black"
-
-[tool.black]
+# FORMATTING and LINTING settings
+[tool.ruff]
 line-length = 100
 
-# MYPY settings
-[tool.mypy]
-files = ["recordmaster/*.py"]
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "T",
+    "FBT",
+    "LOG015",
+    "COM812",
+    "ERA001",
+    "S310",
+    "D205",
+    "D212",
+    "PTH123",
+]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# TY settings
+[tool.ty.src]
+include = ["recordmaster"]
 
 # Bump-My-Version
 [tool.bumpversion]
