@@ -4,7 +4,7 @@
 
 [project]
 name = "inwx-dns-recordmaster"
-version = "1.0.3"
+version = "1.0.4"
 description = "Manage DNS nameserver records of INWX domains via YAML files and API requests. Lightweight, version-control ready"
 authors = [{ name = "Max Mehl", email = "mail@mehl.mx" }]
 requires-python = ">=3.10,<4"
