@@ -2,24 +2,27 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-"""Dataclasses for domains and their records"""
+"""Dataclasses for domains and their records."""
 
 from __future__ import annotations  # support "int | None"
 
 import json
 import logging
 from dataclasses import asdict, dataclass, field
-from os.path import join
 from time import time
+from typing import TYPE_CHECKING
 
-from platformdirs import user_cache_dir
+from platformdirs import user_cache_path
 
 from . import RECORD_KEYS
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @dataclass
 class Record:  # pylint: disable=too-many-instance-attributes
-    """Dataclass holding a nameserver record, be it remote or local"""
+    """Dataclass holding a nameserver record, be it remote or local."""
 
     # nameserver details
     id: str | None = None
@@ -28,13 +31,12 @@ class Record:  # pylint: disable=too-many-instance-attributes
     content: str = ""
     ttl: int = 3600
     prio: int = 0
-    # pylint: disable=invalid-name
-    urlRedirectType: str = ""
-    urlRedirectTitle: str = ""
-    urlRedirectDescription: str = ""
-    urlRedirectFavIcon: str = ""
-    urlRedirectKeywords: str = ""
-    urlAppend: bool = False
+    urlRedirectType: str = ""  # noqa: N815
+    urlRedirectTitle: str = ""  # noqa: N815
+    urlRedirectDescription: str = ""  # noqa: N815
+    urlRedirectFavIcon: str = ""  # noqa: N815
+    urlRedirectKeywords: str = ""  # noqa: N815
+    urlAppend: bool = False  # noqa: N815
 
     def import_records(self, data: dict, remote: bool, domain: str = "", root: str = "") -> None:
         """
@@ -49,7 +51,6 @@ class Record:  # pylint: disable=too-many-instance-attributes
         Returns:
             None
         """
-
         # If handling a subdomain record, prepend the root domain, if given
         if domain and root:
             self.name = f"{domain}.{root}"
@@ -79,7 +80,7 @@ class Record:  # pylint: disable=too-many-instance-attributes
 
 @dataclass
 class DomainStats:  # pylint: disable=too-many-instance-attributes
-    """Dataclass holding general statistics about the handling of a domain"""
+    """Dataclass holding general statistics about the handling of a domain."""
 
     domainname: str = ""
     total_remote: int = 0
@@ -91,8 +92,7 @@ class DomainStats:  # pylint: disable=too-many-instance-attributes
     changed: int = 0
 
     def stats_calc(self, domainname: str) -> None:
-        """Calculate the number of unchanged records based on updates and removals"""
-
+        """Calculate the number of unchanged records based on updates and removals."""
         self.domainname = domainname
         self.unchanged = self.total_remote - self.updated - self.deleted
         self.changed = self.updated + self.added + self.deleted
@@ -110,7 +110,7 @@ class DomainStats:  # pylint: disable=too-many-instance-attributes
         )
 
     def dc2dict(self) -> dict:
-        """Return dataclass as dict"""
+        """Return dataclass as dict."""
         return {
             self.domainname: {
                 "changed": self.changed,
@@ -125,12 +125,12 @@ class DomainStats:  # pylint: disable=too-many-instance-attributes
 
 @dataclass
 class DomainStatsSummary:
-    """Dataclass holding statistics about the handling of all domains"""
+    """Dataclass holding statistics about the handling of all domains."""
 
     stats: dict = field(default_factory=dict)
 
-    def print_summary(self):
-        """Print summary of all stats"""
+    def print_summary(self) -> None:
+        """Print summary of all stats."""
         changed = [domain for domain, stats in self.stats.items() if stats.get("changed", -1) > 0]
 
         if not changed:
@@ -156,7 +156,7 @@ class DomainStatsSummary:
 
 @dataclass
 class Domain:
-    """Dataclass holding general domain information"""
+    """Dataclass holding general domain information."""
 
     id: int | None = None
     name: str = ""
@@ -171,7 +171,7 @@ class Domain:
     def to_local_conf_format(self, records: list[Record], ignore_types: list) -> dict:
         """
         Convert the internal data format of records to a dict that matches the
-        local YAML configuration
+        local YAML configuration.
         """
         data: dict[str, list] = {}
 
@@ -201,17 +201,16 @@ class Domain:
 
 
 def dc2json(domain: Domain) -> str:
-    """return a dataclass as JSON"""
+    """Return a dataclass as JSON."""
     return json.dumps(asdict(domain), indent=2)
 
 
-def cache_data(domain: Domain, debug: bool):
-    """Cache the current state of data before running any syncs"""
-
+def cache_data(domain: Domain, debug: bool) -> None:
+    """Cache the current state of data before running any syncs."""
     # ~/.cache/inwx-dns-recordmaster/example.com-1521462189.json
-    cache_file = join(
-        user_cache_dir("inwx-dns-recordmaster", ensure_exists=True),
-        f"{domain.name}-{int(time())}.json",
+    cache_file: Path = (
+        user_cache_path("inwx-dns-recordmaster", ensure_exists=True)
+        / f"{domain.name}-{int(time())}.json"
     )
 
     # Convert dataclass to JSON, write in cache file
@@ -233,6 +232,7 @@ def convert_punycode(domain: str, is_punycode: bool = True) -> str:
     Args:
         domain (str): The domain name to convert.
         is_punycode (bool): If True, convert from punycode. If False, convert to punycode.
+
     Returns:
         str: The converted domain name.
     """

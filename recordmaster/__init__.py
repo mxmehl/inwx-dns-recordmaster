@@ -2,9 +2,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-"""Global init file"""
+"""Global init file."""
 
 import logging
+from argparse import Namespace
 from importlib.metadata import version
 from typing import TypedDict
 
@@ -26,8 +27,15 @@ RECORD_KEYS = (
     "urlAppend",
 )
 
+
 # Default values for options
-DefaultOptionsType = TypedDict("DefaultOptionsType", {"ignore_types": str, "preserve_remote": bool})
+class DefaultOptionsType(TypedDict):
+    """Default options for the program. These can be overridden by domain-specific options."""
+
+    ignore_types: str
+    preserve_remote: bool
+
+
 DEFAULT_OPTIONS: DefaultOptionsType = {"ignore_types": "SOA", "preserve_remote": False}
 
 # Default app configuration. Will be created as file if not present
@@ -52,11 +60,10 @@ test_instance = false
 """
 
 
-def configure_logger(args) -> logging.Logger:
-    """Set logging options"""
+def configure_logger(args: Namespace) -> logging.Logger:
+    """Set logging options."""
     log = logging.getLogger()
     logging.basicConfig(
-        encoding="utf-8",
         format="[%(asctime)s] %(levelname)s: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )

@@ -2,11 +2,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-"""DNS record sync operations between local and remote"""
+"""DNS record sync operations between local and remote."""
 
 import logging
 
-from INWX.Domrobot import ApiClient  # type: ignore
+from INWX.Domrobot import ApiClient
 
 from . import RECORD_KEYS
 from ._api import inwx_api
@@ -16,7 +16,7 @@ from ._data import Domain, Record
 def sync_existing_local_to_remote(
     api: ApiClient, domain: Domain, dry: bool, interactive: bool
 ) -> None:
-    """Compare previously matched local records to remote ones. If differences, update remote"""
+    """Compare previously matched local records to remote ones. If differences, update remote."""
     # Loop over local records which have an ID, so matched to a remote entry
     for loc_rec in [loc_rec for loc_rec in domain.local_records if loc_rec.id]:
         # For each ID, compare content, ttl, prio etc, collect changes, and make API call
@@ -67,8 +67,8 @@ def sync_existing_local_to_remote(
 
 def create_missing_at_remote(
     api: ApiClient, domain: Domain, records: list[Record], dry: bool, interactive: bool
-):
-    """Create records that only exist locally but not remotely"""
+) -> None:
+    """Create records that only exist locally but not remotely."""
     for rec in records:
         # Only add record parameter to API call that are set locally
         newrecord = {}
@@ -92,16 +92,15 @@ def create_missing_at_remote(
     domain.stats.added += len(records)
 
 
-def delete_unconfigured_at_remote(
-    # pylint: disable=too-many-arguments, too-many-positional-arguments
+def delete_unconfigured_at_remote(  # noqa: PLR0913
     api: ApiClient,
     domain: Domain,
     records: list[Record],
     dry: bool,
     interactive: bool,
     ignore_types: list,
-):
-    """Delete records that only exist remotely but not locally, except some types"""
+) -> None:
+    """Delete records that only exist remotely but not locally, except some types."""
     for rec in records:
         if rec.type not in ignore_types:
             logging.info(

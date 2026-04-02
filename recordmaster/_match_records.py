@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-only
 
-"""Functions for matching local and remote nameserver entries"""
+"""Functions for matching local and remote nameserver entries."""
 
 import logging
 from difflib import get_close_matches
@@ -38,18 +38,14 @@ def _assign_remote_id(domain: Domain, loc_rec: Record, rem_rec: Record, similar:
 
 def _find_closest_matches(partial_matches: list[Record], rem_rec_content: str) -> list[Record]:
     """Find the max. 10 closest partial matches based on content."""
-    close_content_matches = get_close_matches(
+    close_content_matches: list[str] = get_close_matches(
         rem_rec_content, [loc_rec.content for loc_rec in partial_matches], n=10, cutoff=0.6
     )
     # Similar local records found
-    close_records = []
-    # Get the corresponding full records
-    for matched_content in close_content_matches:
-        close_records.append(
-            next(loc_rec for loc_rec in partial_matches if loc_rec.content == matched_content)
-        )
-
-    return close_records
+    return [
+        next(loc_rec for loc_rec in partial_matches if loc_rec.content == matched_content)
+        for matched_content in close_content_matches
+    ]
 
 
 def _process_multiple_matches(
