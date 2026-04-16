@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: "35 9 * * 1"  # run a check once a week
 
+permissions:
+  contents: read
+
 jobs:
   osv-check:
     runs-on: ubuntu-latest

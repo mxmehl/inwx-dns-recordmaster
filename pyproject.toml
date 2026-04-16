@@ -25,7 +25,6 @@ classifiers = [
     "Topic :: System :: Systems Administration",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -85,6 +84,8 @@ ignore = [
     "D212",
     "PTH123",
 ]
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/*" = ["S101", "PLR", "PT011", "ANN001"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
