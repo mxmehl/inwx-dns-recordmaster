@@ -28,5 +28,8 @@ runs:
         enable-cache: true
     - name: Setup project
       run: |
-        uv sync  --locked --all-extras --dev ${{ inputs.uv_args }}
+        uv_args="${UV_ARGS}"
+        uv sync  --locked --all-extras --dev $uv_args
+      env:
+        UV_ARGS: ${{ inputs.uv_args }}
       shell: bash
