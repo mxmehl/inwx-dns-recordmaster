@@ -22,8 +22,8 @@ jobs:
       # do not abort the whole test job if one combination in the matrix fails
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
-        os: [ubuntu-22.04]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
+        os: [ ubuntu-22.04 ]
         include:
           - python-version: "3.10"
             os: macos-latest
@@ -40,7 +40,6 @@ jobs:
           uv_args: --no-dev
       - name: Execute inwx-dns-recordmaster
         run: uv run inwx-dnsrm --help
-
 
   # Test building the package and installing it via pip3
   test-build-install:
@@ -96,7 +95,7 @@ jobs:
           uv run inwx-dnsrm convert -d test-mehl.mx
 
   # Quality checks
-  ruff:
+  ruff-lint:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -105,6 +104,17 @@ jobs:
       - uses: ./.github/actions/uvbuild
       - name: Lint with ruff
         run: uv run ruff check
+
+  ruff-format:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/uvbuild
+      - name: Check formatting with ruff
+        run: uv run ruff format --check
+
   ty:
     runs-on: ubuntu-24.04
     steps:
