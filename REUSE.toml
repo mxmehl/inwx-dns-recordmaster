@@ -1,0 +1,6 @@
+version = 1
+
+[[annotations]]
+path = ["release-please-config.json", ".release-please-manifest.json", "CHANGELOG.md"]
+SPDX-FileCopyrightText = "2026 Max Mehl <https://mehl.mx>"
+SPDX-License-Identifier = "CC0-1.0"
