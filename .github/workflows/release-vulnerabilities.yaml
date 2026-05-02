@@ -16,4 +16,4 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'mxmehl/inwx-dns-recordmaster'
     steps:
-      - uses: mxmehl/latest-release-vulnerability-status@7bf640f27843fc38504540bb20401c13d2d2019b # v1.2.2
+      - uses: mxmehl/latest-release-vulnerability-status@913ecf07fa07d1278ca711791342c56c3a09fec4 # v1.2.3
