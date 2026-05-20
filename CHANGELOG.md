@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.7](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.6...v1.0.7) (2026-05-20)
+
+
+### ⚙️ Chores
+
+* add mise lockfile ([#141](https://github.com/mxmehl/inwx-dns-recordmaster/issues/141)) ([e2f54d6](https://github.com/mxmehl/inwx-dns-recordmaster/commit/e2f54d6325e40d44e0a0725b0cd8620638e98a40))
+* **deps:** update zizmorcore/zizmor-action action to v0.5.6 ([#139](https://github.com/mxmehl/inwx-dns-recordmaster/issues/139)) ([e66bc96](https://github.com/mxmehl/inwx-dns-recordmaster/commit/e66bc96e2911468ff53da5a7a7e12fc149501775))
+
 ## [1.0.6](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.5...v1.0.6) (2026-05-19)
 
 
