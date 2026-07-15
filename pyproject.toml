@@ -10,6 +10,7 @@ authors = [{ name = "Max Mehl", email = "mail@mehl.mx" }]
 requires-python = ">=3.10,<4"
 readme = "README.md"
 license = "GPL-3.0-only"
+license-files = ["LICENSE", "LICENSES/*"]
 keywords = [
     "inwx",
     "dns",
@@ -42,6 +43,7 @@ dependencies = [
 
 [project.urls]
 Repository = "https://github.com/mxmehl/inwx-dns-recordmaster"
+Changelog = "https://github.com/mxmehl/inwx-dns-recordmaster/blob/main/CHANGELOG.md"
 
 [project.scripts]
 inwx-dnsrm = "recordmaster.main:main"
