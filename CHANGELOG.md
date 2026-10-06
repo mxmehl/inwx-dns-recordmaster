@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.7...v1.0.8) (2026-10-06)
+
+
+### ⚙️ Chores
+
+* pin tool versions to minor granularity in mise ([#186](https://github.com/mxmehl/inwx-dns-recordmaster/issues/186)) ([48f90ed](https://github.com/mxmehl/inwx-dns-recordmaster/commit/48f90ed7862aaa850bf20b3c3621b094333adbc8))
+
 ## [1.0.7](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.6...v1.0.7) (2026-10-05)
 
 
