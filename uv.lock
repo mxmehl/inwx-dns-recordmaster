@@ -198,7 +198,7 @@ wheels = [
 
 [[package]]
 name = "inwx-dns-recordmaster"
-version = "1.0.7"
+version = "1.0.8"
 source = { editable = "." }
 default-groups = "all"
 dependencies = [
