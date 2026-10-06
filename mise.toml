@@ -6,7 +6,7 @@
 use_versions_host_track = false
 
 [tools]
-uv = "latest"
+uv = "0.12"
 
 [tasks."lint:ty"]
 description = "Run ty type checks"
