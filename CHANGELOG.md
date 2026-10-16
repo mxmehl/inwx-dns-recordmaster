@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.8](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.7...v1.0.8) (2026-10-16)
+
+
+### ⚙️ Chores
+
+* **deps:** lock file maintenance ([#188](https://github.com/mxmehl/inwx-dns-recordmaster/issues/188)) ([2a76ef1](https://github.com/mxmehl/inwx-dns-recordmaster/commit/2a76ef1dbfae1dbb12916800bcbf4326759b7e59))
+* **deps:** update actions/create-github-app-token action to v3.3.0 ([#192](https://github.com/mxmehl/inwx-dns-recordmaster/issues/192)) ([b890397](https://github.com/mxmehl/inwx-dns-recordmaster/commit/b8903974df87644983c387c007bddb3707e28ff0))
+* **deps:** update astral-sh/setup-uv action to v10.3.0 ([#189](https://github.com/mxmehl/inwx-dns-recordmaster/issues/189)) ([2a56fa7](https://github.com/mxmehl/inwx-dns-recordmaster/commit/2a56fa7252562b2f01648b27cd168d55a51558c8))
+* **deps:** update dependency python to 3.15 ([#191](https://github.com/mxmehl/inwx-dns-recordmaster/issues/191)) ([8656b5a](https://github.com/mxmehl/inwx-dns-recordmaster/commit/8656b5aa36aa2ce88d33aa69ed83304d436b5bf6))
+* **deps:** update dependency uv_build to &gt;=0.13.0,&lt;0.14.0 ([#190](https://github.com/mxmehl/inwx-dns-recordmaster/issues/190)) ([1d79781](https://github.com/mxmehl/inwx-dns-recordmaster/commit/1d797818c8986bf8b02567b7337e8dff1b630912))
+* pin tool versions to minor granularity in mise ([#186](https://github.com/mxmehl/inwx-dns-recordmaster/issues/186)) ([48f90ed](https://github.com/mxmehl/inwx-dns-recordmaster/commit/48f90ed7862aaa850bf20b3c3621b094333adbc8))
+
 ## [1.0.7](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.6...v1.0.7) (2026-10-05)
 
 
