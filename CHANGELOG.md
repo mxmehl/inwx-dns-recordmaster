@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.8...v1.1.0) (2026-11-20)
+
+
+### 🚀 New Features
+
+* drop support for Python 3.10, add Python 3.15 ([#208](https://github.com/mxmehl/inwx-dns-recordmaster/issues/208)) ([1645873](https://github.com/mxmehl/inwx-dns-recordmaster/commit/1645873592abffa21043fa663b9d94e36bbd94b5))
+
+
+### ⚙️ Chores
+
+* **deps:** lock file maintenance ([#204](https://github.com/mxmehl/inwx-dns-recordmaster/issues/204)) ([022575a](https://github.com/mxmehl/inwx-dns-recordmaster/commit/022575a5cbca2987b6b8189a29e6c3ae7f210e2d))
+* **deps:** lock file maintenance ([#206](https://github.com/mxmehl/inwx-dns-recordmaster/issues/206)) ([8016ff8](https://github.com/mxmehl/inwx-dns-recordmaster/commit/8016ff814c0d2be71b32d72eda6329f98460eaae))
+* **deps:** lock file maintenance ([#207](https://github.com/mxmehl/inwx-dns-recordmaster/issues/207)) ([53b7428](https://github.com/mxmehl/inwx-dns-recordmaster/commit/53b74284acc7d92a46402fcfbbe7130e7624d032))
+* **deps:** update astral-sh/setup-uv action to v10.3.3 ([#202](https://github.com/mxmehl/inwx-dns-recordmaster/issues/202)) ([dd5df92](https://github.com/mxmehl/inwx-dns-recordmaster/commit/dd5df92938e92674b7955d302573b23a1514e8b6))
+* **deps:** update zizmorcore/zizmor-action action to v0.8.1 ([#205](https://github.com/mxmehl/inwx-dns-recordmaster/issues/205)) ([ca45cd7](https://github.com/mxmehl/inwx-dns-recordmaster/commit/ca45cd7f3e5508e55b15cb4b9117fbc8a86f598a))
+
 ## [1.0.8](https://github.com/mxmehl/inwx-dns-recordmaster/compare/v1.0.7...v1.0.8) (2026-10-26)
 
 
